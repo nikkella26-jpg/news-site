@@ -10,8 +10,10 @@ BETTER_AUTH_URL=http://localhost:3000
 
 ```bash
 
+npx prisma migrate reset
 npx prisma migrate dev
 npx prisma generate
+npx prisma migrate deploy
 npx prisma studio
 npm run dev
 
