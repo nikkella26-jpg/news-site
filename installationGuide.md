@@ -15,4 +15,6 @@ npx prisma migrate deploy
 npx prisma studio
 npm run dev
 
+npx install better-auth -- all
+
 ```
