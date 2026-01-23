@@ -6,6 +6,7 @@ import Stripe from "stripe";
 // If your Prisma file is located elsewhere, you can change the path
 
 import prisma from "./prisma";
+import { nextCookies } from "better-auth/next-js";
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
 });
@@ -20,5 +21,6 @@ export const auth = betterAuth({
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       createCustomerOnSignUp: true,
     }),
+    nextCookies(),
   ],
 });
