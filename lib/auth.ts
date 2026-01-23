@@ -20,6 +20,10 @@ export const auth = betterAuth({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       createCustomerOnSignUp: true,
+      subscription: {
+    enabled: true,
+    plans: []
+      }
     }),
     nextCookies(),
   ],
