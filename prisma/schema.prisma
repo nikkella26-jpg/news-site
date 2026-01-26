@@ -25,10 +25,11 @@ model User {
   accounts      Account[]
 
   role             String?
-  banned           Boolean?  @default(false)
+  banned           Boolean?       @default(false)
   banReason        String?
   banExpires       DateTime?
   stripeCustomerId String?
+  subscriptions    Subscription[]
 
   @@unique([email])
   @@map("user")
@@ -87,7 +88,6 @@ model Verification {
 model Subscription {
   id                   String    @id
   plan                 String
-  referenceId          String
   stripeCustomerId     String?
   stripeSubscriptionId String?
   status               String?   @default("incomplete")
@@ -101,5 +101,9 @@ model Subscription {
   endedAt              DateTime?
   seats                Int?
 
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
   @@map("subscription")
 }
