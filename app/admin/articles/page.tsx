@@ -1,9 +1,22 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getArticles, getCategories, deleteArticle, toggleEditorsChoice, createCategory } from "./actions";
+import {
+  getArticles,
+  getCategories,
+  deleteArticle,
+  toggleEditorsChoice,
+  createCategory,
+} from "./actions";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Star, Plus, FolderPlus } from "lucide-react";
 import Link from "next/link";
@@ -14,7 +27,10 @@ export default async function ArticlesPage() {
     headers: await headers(),
   });
 
-  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+  if (
+    !session ||
+    (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")
+  ) {
     redirect("/");
   }
 
@@ -46,8 +62,12 @@ export default async function ArticlesPage() {
     <div className="p-6 max-w-7xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Hantera Artiklar</h1>
-          <p className="text-muted-foreground">Skapa, redigera och organisera dina nyheter.</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Hantera Artiklar
+          </h1>
+          <p className="text-muted-foreground">
+            Skapa, redigera och organisera dina nyheter.
+          </p>
         </div>
         <Link href="/admin/articles/new">
           <Button>
@@ -66,18 +86,26 @@ export default async function ArticlesPage() {
               Kategorier
             </h2>
             <form action={handleCreateCategory} className="flex gap-2 mb-4">
-              <input 
-                name="name" 
-                placeholder="Ny kategori..." 
+              <input
+                name="name"
+                placeholder="Ny kategori..."
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               />
-              <Button type="submit" size="sm">Lägg till</Button>
+              <Button type="submit" size="sm">
+                Lägg till
+              </Button>
             </form>
             <div className="flex flex-wrap gap-2">
-              {categories.map(cat => (
-                <Badge key={cat.id} variant="secondary">{cat.name}</Badge>
+              {categories.map((cat) => (
+                <Badge key={cat.id} variant="secondary">
+                  {cat.name}
+                </Badge>
               ))}
-              {categories.length === 0 && <p className="text-sm text-muted-foreground italic">Inga kategorier än.</p>}
+              {categories.length === 0 && (
+                <p className="text-sm text-muted-foreground italic">
+                  Inga kategorier än.
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -91,7 +119,7 @@ export default async function ArticlesPage() {
                   <TableHead>Titel</TableHead>
                   <TableHead>Kategori</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Editor's Choice</TableHead>
+                  <TableHead>Editors Choice</TableHead>
                   <TableHead className="text-right">Åtgärder</TableHead>
                 </TableRow>
               </TableHeader>
@@ -101,35 +129,52 @@ export default async function ArticlesPage() {
                     <TableCell className="font-medium">
                       <div>
                         {article.title}
-                        <div className="text-xs text-muted-foreground font-normal">av {article.author.name}</div>
+                        <div className="text-xs text-muted-foreground font-normal">
+                          av {article.author.name}
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell>
                       {article.category ? (
                         <Badge variant="outline">{article.category.name}</Badge>
                       ) : (
-                        <span className="text-muted-foreground text-xs italic">Ingen</span>
+                        <span className="text-muted-foreground text-xs italic">
+                          Ingen
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
                       {article.published ? (
-                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Publicerad</Badge>
+                        <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                          Publicerad
+                        </Badge>
                       ) : (
                         <Badge variant="secondary">Utkast</Badge>
                       )}
                     </TableCell>
                     <TableCell>
-                      <form action={async () => {
-                        "use server";
-                        await toggleEditorsChoice(article.id, article.isEditorsChoice);
-                      }}>
-                        <Button 
+                      <form
+                        action={async () => {
+                          "use server";
+                          await toggleEditorsChoice(
+                            article.id,
+                            article.isEditorsChoice,
+                          );
+                        }}
+                      >
+                        <Button
                           type="submit"
-                          variant="ghost" 
-                          size="sm" 
-                          className={article.isEditorsChoice ? "text-yellow-500 hover:text-yellow-600" : "text-muted-foreground"}
+                          variant="ghost"
+                          size="sm"
+                          className={
+                            article.isEditorsChoice
+                              ? "text-yellow-500 hover:text-yellow-600"
+                              : "text-muted-foreground"
+                          }
                         >
-                          <Star className={`h-4 w-4 ${article.isEditorsChoice ? "fill-current" : ""}`} />
+                          <Star
+                            className={`h-4 w-4 ${article.isEditorsChoice ? "fill-current" : ""}`}
+                          />
                         </Button>
                       </form>
                     </TableCell>
@@ -140,11 +185,17 @@ export default async function ArticlesPage() {
                             <Edit className="h-4 w-4" />
                           </Button>
                         </Link>
-                        <form action={async () => {
-                          "use server";
-                          await deleteArticle(article.id);
-                        }}>
-                          <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600">
+                        <form
+                          action={async () => {
+                            "use server";
+                            await deleteArticle(article.id);
+                          }}
+                        >
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-600"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </form>
@@ -154,7 +205,10 @@ export default async function ArticlesPage() {
                 ))}
                 {articles.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                    <TableCell
+                      colSpan={5}
+                      className="text-center py-8 text-muted-foreground"
+                    >
                       Inga artiklar hittades. Skapa din första artikel!
                     </TableCell>
                   </TableRow>
