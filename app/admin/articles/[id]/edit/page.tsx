@@ -7,19 +7,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-export default async function EditArticlePage({ params }: { params: Promise<{ id: string }> }) {
+export default async function EditArticlePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+  if (
+    !session ||
+    (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")
+  ) {
     redirect("/");
   }
 
@@ -36,7 +49,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
 
   async function handleSubmit(formData: FormData) {
     "use server";
-    
+
     const title = formData.get("title") as string;
     const content = formData.get("content") as string;
     const categoryId = formData.get("categoryId") as string;
@@ -58,7 +71,10 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
-      <Link href="/admin/articles" className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors">
+      <Link
+        href="/admin/articles"
+        className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
+      >
         <ArrowLeft className="mr-2 h-4 w-4" />
         Tillbaka till listan
       </Link>
@@ -77,22 +93,31 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Titel</Label>
-                  <Input id="title" name="title" defaultValue={article.title} required />
+                  <Input
+                    id="title"
+                    name="title"
+                    defaultValue={article.title}
+                    required
+                  />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="image">Bild-URL (valfritt)</Label>
-                  <Input id="image" name="image" defaultValue={article.image ?? ""} />
+                  <Input
+                    id="image"
+                    name="image"
+                    defaultValue={article.image ?? ""}
+                  />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="content">Brödtext</Label>
-                  <Textarea 
-                    id="content" 
-                    name="content" 
+                  <Textarea
+                    id="content"
+                    name="content"
                     defaultValue={article.content}
-                    className="min-h-[400px]" 
-                    required 
+                    className="min-h-[400px]"
+                    required
                   />
                 </div>
               </CardContent>
@@ -107,7 +132,10 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="categoryId">Kategori</Label>
-                  <Select name="categoryId" defaultValue={article.categoryId ?? undefined}>
+                  <Select
+                    name="categoryId"
+                    defaultValue={article.categoryId ?? undefined}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Välj kategori" />
                     </SelectTrigger>
@@ -122,21 +150,42 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="published" name="published" defaultChecked={article.published} />
-                  <Label htmlFor="published" className="font-normal cursor-pointer">
+                  <Checkbox
+                    id="published"
+                    name="published"
+                    defaultChecked={article.published}
+                  />
+                  <Label
+                    htmlFor="published"
+                    className="font-normal cursor-pointer"
+                  >
                     Publicerad
                   </Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Checkbox id="isEditorsChoice" name="isEditorsChoice" defaultChecked={article.isEditorsChoice} />
-                  <Label htmlFor="isEditorsChoice" className="font-normal cursor-pointer">
-                    Editor's Choice
+                  <Checkbox
+                    id="isEditorsChoice"
+                    name="isEditorsChoice"
+                    defaultChecked={article.isEditorsChoice}
+                  />
+                  <Label
+                    htmlFor="isEditorsChoice"
+                    className="font-normal cursor-pointer"
+                  >
+                    Editors Choice
                   </Label>
                 </div>
 
-                <Button type="submit" className="w-full">Spara Ändringar</Button>
-                <Button type="button" variant="outline" className="w-full" asChild>
+                <Button type="submit" className="w-full">
+                  Spara Ändringar
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  asChild
+                >
                   <Link href="/admin/articles">Avbryt</Link>
                 </Button>
               </CardContent>
