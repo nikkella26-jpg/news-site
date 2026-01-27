@@ -76,11 +76,11 @@ export default async function EditArticlePage({
         className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Tillbaka till listan
+        Back to list
       </Link>
 
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold tracking-tight">Redigera Artikel</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Edit Article</h1>
       </div>
 
       <form action={handleSubmit}>
@@ -88,11 +88,11 @@ export default async function EditArticlePage({
           <div className="md:col-span-2 space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Innehåll</CardTitle>
+                <CardTitle>Content</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Titel</Label>
+                  <Label htmlFor="title">Title</Label>
                   <Input
                     id="title"
                     name="title"
@@ -102,7 +102,7 @@ export default async function EditArticlePage({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="image">Bild-URL (valfritt)</Label>
+                  <Label htmlFor="image">Image URL (optional)</Label>
                   <Input
                     id="image"
                     name="image"
@@ -111,7 +111,7 @@ export default async function EditArticlePage({
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="content">Brödtext</Label>
+                  <Label htmlFor="content">Content</Label>
                   <Textarea
                     id="content"
                     name="content"
@@ -127,17 +127,17 @@ export default async function EditArticlePage({
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Inställningar</CardTitle>
+                <CardTitle>Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="categoryId">Kategori</Label>
+                  <Label htmlFor="categoryId">Category</Label>
                   <Select
                     name="categoryId"
                     defaultValue={article.categoryId ?? undefined}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Välj kategori" />
+                      <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((cat) => (
@@ -159,7 +159,7 @@ export default async function EditArticlePage({
                     htmlFor="published"
                     className="font-normal cursor-pointer"
                   >
-                    Publicerad
+                    Published
                   </Label>
                 </div>
 
@@ -178,7 +178,7 @@ export default async function EditArticlePage({
                 </div>
 
                 <Button type="submit" className="w-full">
-                  Spara Ändringar
+                  Save Changes
                 </Button>
                 <Button
                   type="button"
@@ -186,7 +186,7 @@ export default async function EditArticlePage({
                   className="w-full"
                   asChild
                 >
-                  <Link href="/admin/articles">Avbryt</Link>
+                  <Link href="/admin/articles">Cancel</Link>
                 </Button>
               </CardContent>
             </Card>

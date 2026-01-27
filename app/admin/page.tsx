@@ -27,7 +27,7 @@ export default async function AdminPage() {
           <Link href="/admin/articles/new">
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Skapa Artikel
+              Create Article
             </Button>
           </Link>
         </div>
@@ -36,46 +36,46 @@ export default async function AdminPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Användare</CardTitle>
+            <CardTitle className="text-sm font-medium">Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalUsers}</div>
             <p className="text-xs text-muted-foreground">
-              Totalt antal registrerade
+              Total registered users
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Aktiva Prenumerationer</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
             <p className="text-xs text-muted-foreground">
-              Betalande medlemmar
+              Paying members
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Artiklar</CardTitle>
+            <CardTitle className="text-sm font-medium">Articles</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalArticles}</div>
             <p className="text-xs text-muted-foreground">
-              Publicerade och utkast
+              Published and drafts
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Beräknad Intäkt</CardTitle>
+            <CardTitle className="text-sm font-medium">Estimated Revenue</CardTitle>
             <div className="text-xs font-bold text-green-600">SEK</div>
           </CardHeader>
           <CardContent>
@@ -83,7 +83,7 @@ export default async function AdminPage() {
               {stats.activeSubscriptions * 99} kr
             </div>
             <p className="text-xs text-muted-foreground">
-              Baserat på 99 kr/mån
+              Based on 99 SEK/month
             </p>
           </CardContent>
         </Card>
@@ -92,19 +92,19 @@ export default async function AdminPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Snabblänkar</CardTitle>
+            <CardTitle>Quick Links</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4">
             <Link href="/admin/users">
               <Button variant="outline" className="w-40 h-24 flex flex-col gap-2">
                 <Users className="h-6 w-6" />
-                Hantera Användare
+                Manage Users
               </Button>
             </Link>
             <Link href="/admin/articles">
               <Button variant="outline" className="w-40 h-24 flex flex-col gap-2">
                 <FileText className="h-6 w-6" />
-                Hantera Artiklar
+                Manage Articles
               </Button>
             </Link>
           </CardContent>

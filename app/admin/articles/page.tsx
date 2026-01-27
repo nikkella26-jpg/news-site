@@ -63,36 +63,36 @@ export default async function ArticlesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
-            Hantera Artiklar
+            Manage Articles
           </h1>
           <p className="text-muted-foreground">
-            Skapa, redigera och organisera dina nyheter.
+            Create, edit and organize your news.
           </p>
         </div>
         <Link href="/admin/articles/new">
           <Button>
             <Plus className="mr-2 h-4 w-4" />
-            Ny Artikel
+            New Article
           </Button>
         </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
-        {/* Kategorier Sidebar/Box */}
+        {/* Categories Sidebar/Box */}
         <div className="md:col-span-1 space-y-4">
           <div className="border rounded-lg p-4 bg-card">
             <h2 className="font-semibold mb-4 flex items-center">
               <FolderPlus className="mr-2 h-4 w-4" />
-              Kategorier
+              Categories
             </h2>
             <form action={handleCreateCategory} className="flex gap-2 mb-4">
               <input
                 name="name"
-                placeholder="Ny kategori..."
+                placeholder="New category..."
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
               />
               <Button type="submit" size="sm">
-                Lägg till
+                Add
               </Button>
             </form>
             <div className="flex flex-wrap gap-2">
@@ -103,24 +103,24 @@ export default async function ArticlesPage() {
               ))}
               {categories.length === 0 && (
                 <p className="text-sm text-muted-foreground italic">
-                  Inga kategorier än.
+                  No categories yet.
                 </p>
               )}
             </div>
           </div>
         </div>
 
-        {/* Artiklar Tabell */}
+        {/* Articles Table */}
         <div className="md:col-span-3">
           <div className="border rounded-lg overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Titel</TableHead>
-                  <TableHead>Kategori</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Category</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Editors Choice</TableHead>
-                  <TableHead className="text-right">Åtgärder</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -130,7 +130,7 @@ export default async function ArticlesPage() {
                       <div>
                         {article.title}
                         <div className="text-xs text-muted-foreground font-normal">
-                          av {article.author.name}
+                          by {article.author.name}
                         </div>
                       </div>
                     </TableCell>
@@ -139,17 +139,17 @@ export default async function ArticlesPage() {
                         <Badge variant="outline">{article.category.name}</Badge>
                       ) : (
                         <span className="text-muted-foreground text-xs italic">
-                          Ingen
+                          None
                         </span>
                       )}
                     </TableCell>
                     <TableCell>
                       {article.published ? (
                         <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                          Publicerad
+                          Published
                         </Badge>
                       ) : (
-                        <Badge variant="secondary">Utkast</Badge>
+                        <Badge variant="secondary">Draft</Badge>
                       )}
                     </TableCell>
                     <TableCell>
@@ -209,7 +209,7 @@ export default async function ArticlesPage() {
                       colSpan={5}
                       className="text-center py-8 text-muted-foreground"
                     >
-                      Inga artiklar hittades. Skapa din första artikel!
+                      No articles found. Create your first article!
                     </TableCell>
                   </TableRow>
                 )}
