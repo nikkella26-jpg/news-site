@@ -119,7 +119,7 @@
 @layer base {
   * {
     border-color: var(--color-border);
-    outline-color: var(--color-ring);
+    outline-color: oklch(from var(--color-ring) l c h / 0.5);
     outline-width: 2px;
     outline-style: solid;
     outline-offset: 0.5px;
