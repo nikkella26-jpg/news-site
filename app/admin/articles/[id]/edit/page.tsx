@@ -116,7 +116,7 @@ export default async function EditArticlePage({
                     id="content"
                     name="content"
                     defaultValue={article.content}
-                    className="min-h-[400px]"
+                    className="min-h-400"
                     required
                   />
                 </div>
