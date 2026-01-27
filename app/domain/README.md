@@ -17,4 +17,4 @@ geo / weather / energy / supporting : are the sub domains for the API being crea
 ## Rules
 
 1. Domain code must not depend on UI components
-1. External APIs are accessed only via adapters
+2. External APIs are accessed only via adapters
