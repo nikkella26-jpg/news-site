@@ -1,9 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* Removed invalid @custom-variant dark (&:is(.dark *)); */
 
-@theme inline {
+/* Moved theme variables to :root */
+:root {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -117,9 +118,17 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    border-color: var(--color-border);
+  }
+
+  *:focus-visible {
+    outline-color: var(--color-ring);
+    outline-width: 2px;
+    outline-style: solid;
+    outline-offset: 0.5px;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
   }
 }
