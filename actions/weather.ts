@@ -8,6 +8,11 @@ export async function getWeatherByLocation(
   const response = await fetch(
     `https://weather.lexlink.se/forecast/location/${location}`,
   );
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch weather data: ${response.status} ${response.statusText}`,
+    );
+  }
   const result = await response.json();
   return result;
 }
