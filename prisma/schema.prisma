@@ -6,12 +6,20 @@
 
 generator client {
   provider = "prisma-client"
+<<<<<<< HEAD
   output   = "./generated"
 }
 
 datasource db {
   provider = "postgres"
 
+=======
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+>>>>>>> b612106939ae29de5fb6a19248cc08766ff0575f
 }
 
 model User {
@@ -25,6 +33,16 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+<<<<<<< HEAD
+=======
+  role             String?
+  banned           Boolean?       @default(false)
+  banReason        String?
+  banExpires       DateTime?
+  stripeCustomerId String?
+  subscriptions    Subscription[]
+
+>>>>>>> b612106939ae29de5fb6a19248cc08766ff0575f
   @@unique([email])
   @@map("user")
 }
@@ -40,6 +58,11 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+<<<<<<< HEAD
+=======
+  impersonatedBy String?
+
+>>>>>>> b612106939ae29de5fb6a19248cc08766ff0575f
   @@unique([token])
   @@index([userId])
   @@map("session")
@@ -75,4 +98,31 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+<<<<<<< HEAD
 }
+=======
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?   @default("incomplete")
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  seats                Int?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("subscription")
+}
+>>>>>>> b612106939ae29de5fb6a19248cc08766ff0575f
