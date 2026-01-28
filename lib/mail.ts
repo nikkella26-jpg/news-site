@@ -8,8 +8,8 @@ const EMAIL_CONFIG = {
   port: 587,
   secure: false,
   auth: {
-    user: "jimmy33@ethereal.email",
-    pass: "dEwSqhTw1TWaGWzKga",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 };
 
