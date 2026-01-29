@@ -1,6 +1,7 @@
 import React from "react";
 import { articles } from "@/data/articles";
 import Link from "next/link";
+import Image from "next/image";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -10,7 +11,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
 
   const categoryArticles = articles.filter(
-    (a) => a.category?.toLowerCase() === slug.toLowerCase()
+    (a) => a.category?.toLowerCase() === slug.toLowerCase(),
   );
 
   const categoryLabels: Record<string, string> = {
@@ -23,12 +24,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const title = categoryLabels[slug] ?? slug;
 
   return (
-    <main className="container mx-auto py-10 px-4 
+    <main
+      className="container mx-auto py-10 px-4 
                      bg-white text-slate-900 
-                     dark:bg-slate-950 dark:text-slate-100">
-
-      <h1 className="text-4xl font-bold mb-8 capitalize border-b pb-4 
-                     border-slate-300 dark:border-slate-700">
+                     dark:bg-slate-950 dark:text-slate-100"
+    >
+      <h1
+        className="text-4xl font-bold mb-8 capitalize border-b pb-4 
+                     border-slate-300 dark:border-slate-700"
+      >
         {title}
       </h1>
 
@@ -41,10 +45,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                          bg-white dark:bg-slate-900
                          border-slate-300 dark:border-slate-700"
             >
-              <img
+              <Image
                 src={article.image}
                 className="w-48 h-36 object-cover rounded-lg"
                 alt={article.title}
+                width={200}
+                height={200}
               />
 
               <div className="p-4 flex flex-grow flex-col">
