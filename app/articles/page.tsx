@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { articles } from "@/data/articles";
 import Link from "next/link";
+import Image from "next/image";
 
 // In Next.js 15, params is a Promise
 export default async function ArticlesPage({
@@ -28,10 +29,12 @@ export default async function ArticlesPage({
         </Link>
         <h1 className="text-4xl font-bold mb-4">{article.title}</h1>
         <p className="text-gray-600 mb-6">{article.date}</p>
-        <img
+        <Image
           src={article.image}
           alt={article.title}
           className="w-full rounded mb-6"
+          width={100}
+          height={100}
         />
         <p className="text-lg leading-relaxed whitespace-pre-line">
           {article.content}
@@ -52,10 +55,12 @@ export default async function ArticlesPage({
             key={article.id}
             className="border p-4 rounded-lg shadow-sm flex flex-col"
           >
-            <img
+            <Image
               src={article.image}
               className="w-full h-40 object-cover rounded mb-4"
               alt={article.title}
+              width={100}
+              height={100}
             />
             <h2 className="font-bold text-lg mb-2 line-clamp-2">
               {article.title}
