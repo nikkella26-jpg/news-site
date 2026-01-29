@@ -38,7 +38,7 @@ export default function LandingPage() {
         <section className="mt-10 p-6 bg-gray dark:bg-black-800 rounded-lg shadow">
           <h3 className="text-3xl mb-4 dark:text-white">Editor’s Choice Headline</h3>
 
-          <Link href={`/article/${editorsHeadline.id}`}>
+          <Link href={`/articles/${editorsHeadline.id}`}>
             <div className="cursor-pointer">
               <Image
                 src={editorsHeadline.image}
