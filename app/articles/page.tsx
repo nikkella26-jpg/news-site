@@ -41,7 +41,7 @@ export default async function ArticlesPage({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {articles.map((article) => (
           <div key={article.id} className="border p-4 rounded-lg shadow-sm flex flex-col">
-            <img src={article.image} className="w-full h-40 object-cover rounded mb-4" alt="" />
+            <img src={article.image} className="w-full h-40 object-cover rounded mb-4" alt={article.title} />
             <h2 className="font-bold text-lg mb-2 line-clamp-2">{article.title}</h2>
             <p className="text-sm text-gray-600 mb-4 line-clamp-2">{article.content}</p>
             <Link 
