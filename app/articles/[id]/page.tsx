@@ -12,8 +12,7 @@ export default async function ArticleDetail({
   return (
     <article>
       <h1 className="text-4xl font-bold">{article.title}</h1>
-      <div className="mt-6 text-lg leading-relaxed whitespace-pre-line"></div>
-      <div className="mt-6">{article.content}</div>
+      <div className="mt-6 text-lg leading-relaxed whitespace-pre-line">{article.content}</div>
     </article>
   );
 }
