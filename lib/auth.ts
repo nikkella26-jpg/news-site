@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import { BetterAuth } from "better-auth";
-
-export const auth = new BetterAuth({
-  providers: [],
-});
-=======
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin } from "better-auth/plugins";
@@ -59,4 +52,3 @@ export const auth = betterAuth({
     nextCookies(),
   ],
 });
->>>>>>> b612106939ae29de5fb6a19248cc08766ff0575f
