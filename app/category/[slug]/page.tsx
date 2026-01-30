@@ -53,7 +53,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 height={200}
               />
 
-              <div className="p-4 flex n-col">
+              <div className="p-4 flex flex-grow flex-col">
                 <h2 className="text-xl font-bold mb-2 line-clamp-2">
                   {article.title}
                 </h2>
