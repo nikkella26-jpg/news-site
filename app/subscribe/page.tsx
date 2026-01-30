@@ -18,6 +18,7 @@ export default function SubscribePage() {
         </header>
 
         <section>
+          <h2 className="sr-only">Subscription Plans</h2>
           <PlansList />
         </section>
       </div>
