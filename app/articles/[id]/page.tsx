@@ -5,7 +5,7 @@ export default async function ArticleDetail({
 }: {
   params: { id: string };
 }) {
-  const article = await articles.find((a) => a.id === params.id);
+  const article = articles.find((a) => a.id === params.id);
   if (!article) return <p>Not found</p>;
 
   return (
