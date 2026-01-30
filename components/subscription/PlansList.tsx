@@ -1,16 +1,7 @@
 "use client";
 
 import React from "react";
-import PriceCard from "./PriceCard";
-
-type Plan = {
-  id: string;
-  name: string;
-  price: number;
-  interval: "month" | "year";
-  description?: string;
-  priceId?: string;
-};
+import PriceCard, { Plan } from "./PriceCard";
 
 const PLANS: Plan[] = [
   {
