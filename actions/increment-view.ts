@@ -5,11 +5,12 @@
 // import { viewSchema } from "@/lib/validators";
 
 // TO THIS:
-import { viewSchema } from "@/lib/validator"; 
+import { viewSchema } from "@/data/validator"; 
 
 const views = new Map<string, number>();
 
 export async function incrementView(id: string) {
+
   // Now the validator will work correctly
   const result = viewSchema.safeParse({ articleId: id });
   
