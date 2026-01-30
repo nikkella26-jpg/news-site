@@ -5,14 +5,15 @@ export default async function ArticleDetail({
 }: {
   params: { id: string };
 }) {
-  const article = articles.find(a => a.id === params.id);
+  const article = await articles.find((a) => a.id === params.id);
   if (!article) return <p>Not found</p>;
-
 
   return (
     <article>
       <h1 className="text-4xl font-bold">{article.title}</h1>
-      <div className="mt-6 text-lg leading-relaxed whitespace-pre-line">{article.content}</div>
+      <div className="mt-6 text-lg leading-relaxed whitespace-pre-line">
+        {article.content}
+      </div>
     </article>
   );
 }
