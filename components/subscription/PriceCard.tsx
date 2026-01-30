@@ -3,7 +3,7 @@
 import React from "react";
 import { Button } from "../ui/button";
 
-type PriceCardProps = {
+export type Plan = {
   id: string;
   name: string;
   price: number;
@@ -18,7 +18,7 @@ export default function PriceCard({
   price,
   interval,
   description,
-}: PriceCardProps) {
+}: Plan) {
   const handleSubscribe = async () => {
     // Placeholder: when to integrate Stripe, replace this with real checkout call
     alert(`Start checkout for ${name} (${id}) — integrate Stripe here`);
