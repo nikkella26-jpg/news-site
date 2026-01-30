@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function SubscribePage() {
   return (
-    <main className="min-h-screen bg-zinc-50 p-8 dark:bg-black">
+    <div className="min-h-screen bg-zinc-50 p-8 dark:bg-black">
       <div className="mx-auto w-full max-w-4xl">
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Subscribe</h1>
@@ -21,6 +21,6 @@ export default function SubscribePage() {
           <PlansList />
         </section>
       </div>
-    </main>
+    </div>
   );
 }
