@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 import { articles } from "@/data/articles";
 
 interface CategoryPageProps {
@@ -24,12 +25,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const title = categoryLabels[slug] ?? slug;
 
   return (
-    <main className="container mx-auto py-10 px-4 
-                     bg-white text-slate-900 
-                     dark:bg-slate-950 dark:text-slate-100">
-
-      <h1 className="text-4xl font-bold mb-8 capitalize border-b pb-4 
-                     border-slate-300 dark:border-slate-700">
+    <main
+      className="container mx-auto py-10 px-4 
+                 bg-white text-slate-900 
+                 dark:bg-slate-950 dark:text-slate-100"
+    >
+      <h1
+        className="text-4xl font-bold mb-8 capitalize border-b pb-4 
+                   border-slate-300 dark:border-slate-700"
+      >
         {title}
       </h1>
 
@@ -42,6 +46,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                          bg-white dark:bg-slate-900
                          border-slate-300 dark:border-slate-700"
             >
+<<<<<<< Updated upstream
               {/* Uppdaterad till Next.js Image för automatisk optimering */}
               <div className="relative">
                 <Image
@@ -54,6 +59,15 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   priority={index < 2} 
                 />
               </div>
+=======
+              <Image
+                src={article.image}
+                alt={article.title}
+                width={400}
+                height={250}
+                className="w-full h-40 object-cover"
+              />
+>>>>>>> Stashed changes
 
               <div className="p-4 flex flex-grow flex-col">
                 <h2 className="text-xl font-bold mb-2 line-clamp-2">

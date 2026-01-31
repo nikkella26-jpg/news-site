@@ -1,6 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+<<<<<<< Updated upstream
 import { articles } from "@/data/articles";
+=======
+import Image from "next/image";
+>>>>>>> Stashed changes
 
 export default function ArticlesPage() {
   return (
@@ -9,6 +13,7 @@ export default function ArticlesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {articles.map((article) => (
+<<<<<<< Updated upstream
           <div key={article.id} className="border p-4 rounded-lg shadow-sm flex flex-col">
             {/* Optimerad Next.js Image */}
             <div className="relative w-full h-40 mb-4">
@@ -22,8 +27,23 @@ export default function ArticlesPage() {
                 priority={article.id <= 3} 
               />
             </div>
+=======
+          <div
+            key={article.id}
+            className="border p-4 rounded-lg shadow-sm flex flex-col"
+          >
+            <Image
+              src={article.image}
+              alt={article.title}
+              width={600}
+              height={400}
+              className="w-full h-40 object-cover rounded mb-4"
+            />
+>>>>>>> Stashed changes
 
-            <h2 className="font-bold text-lg mb-2 line-clamp-2">{article.title}</h2>
+            <h2 className="font-bold text-lg mb-2 line-clamp-2">
+              {article.title}
+            </h2>
 
             <p className="text-sm text-gray-600 mb-4 line-clamp-2">
               {article.content}
