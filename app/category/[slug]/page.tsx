@@ -1,6 +1,7 @@
+import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { articles } from "@/data/articles";
-import Link from "next/link";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -34,18 +35,25 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
       {categoryArticles.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {categoryArticles.map((article) => (
+          {categoryArticles.map((article, index) => (
             <div
               key={article.id}
               className="border rounded-lg overflow-hidden shadow-sm flex flex-col
                          bg-white dark:bg-slate-900
                          border-slate-300 dark:border-slate-700"
             >
-              <img
-                src={article.image}
-                className="w-48 h-36 object-cover rounded-lg"
-                alt={article.title}
-              />
+              {/* Uppdaterad till Next.js Image för automatisk optimering */}
+              <div className="relative">
+                <Image
+                  src={article.image}
+                  alt={article.title}
+                  width={400} // Optimerad bredd för grid-layout
+                  height={300} // Motsvarar h-36/aspect ratio
+                  className="w-full h-48 object-cover" // Justerad till full bredd för bättre grid-estetik
+                  // Laddar de första två bilderna direkt för bättre LCP (Largest Contentful Paint)
+                  priority={index < 2} 
+                />
+              </div>
 
               <div className="p-4 flex flex-grow flex-col">
                 <h2 className="text-xl font-bold mb-2 line-clamp-2">
