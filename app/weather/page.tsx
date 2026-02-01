@@ -1,15 +1,23 @@
-import { getWeatherByLocation } from "@/actions/weather";
+async function getWeatherByLocation(location: string) {
+  try {
+    // fetch SMHI
+    return {
+      location,
+      temperature: 7,
+      summary: "Cloudy",
+    };
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+}
 
 export default async function Page() {
-  try {
-    const weather = await getWeatherByLocation("Linköping");
-    return (
-      <div>
-        <pre>{JSON.stringify(weather, null, 2)}</pre>
-      </div>
-    );
-  } catch (error) {
-    console.error(error);
-    return <div>Failed to load weather data. Please try again later.</div>;
+  const weather = await getWeatherByLocation("Linköping");
+
+  if (!weather) {
+    return <div>Failed to load weather data.</div>;
   }
+
+  return <pre>{JSON.stringify(weather, null, 2)}</pre>;
 }
