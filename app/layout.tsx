@@ -1,6 +1,7 @@
 import "./globals.css";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
+import Link from "next/link";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
@@ -17,10 +18,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <nav className="nav-padding">
+            <Link href="/">Home</Link> | <Link href="/weather">Weather</Link>
+          </nav>
+
           <Header />
-          <main className="flex-1 container mx-auto px-4">
-            {children}
-          </main>
+          <main className="flex-1 container mx-auto px-4">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

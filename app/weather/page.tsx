@@ -1,15 +1,21 @@
-import { getWeatherByLocation } from "@/actions/weather";
+async function getWeather() {
+  await new Promise((r) => setTimeout(r, 1000));
+
+  return {
+    city: "Linköping",
+    temperature: 7,
+    summary: "Cloudy",
+  };
+}
 
 export default async function Page() {
-  try {
-    const weather = await getWeatherByLocation("Linköping");
-    return (
-      <div>
-        <pre>{JSON.stringify(weather, null, 2)}</pre>
-      </div>
-    );
-  } catch (error) {
-    console.error(error);
-    return <div>Failed to load weather data. Please try again later.</div>;
-  }
+  const weather = await getWeather();
+
+  return (
+    <div>
+      <h1>{weather.city}</h1>
+      <p>{weather.summary}</p>
+      <p>{weather.temperature}°C</p>
+    </div>
+  );
 }
