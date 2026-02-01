@@ -7,6 +7,21 @@ export interface WeatherType {
   location: Location;
 }
 
+export interface Weather {
+  location: {
+    name: string;
+    lat: number;
+    lon: number;
+  };
+  timeseries: Array<{
+    temp: number;
+    summary: string;
+    humidity: number;
+    windSpeed: number;
+    visibility: number;
+  }>;
+}
+
 export interface TimeSeries {
   validTime: string;
   airPressure: number;
