@@ -47,7 +47,7 @@ Emergency services were deployed to the Tyrol region following heavy snowfall.`
   category: "tech", // This acts as the "tag" or "bucket"
   title: "The Rise of FPV Drones in Wars",
   date: "January 25, 2026",
-  image: "https://dronelife.com/wp-content/uploads/2024/05/1024px-UA_military_FPV_drones_05-300x225.jpg",
+  image: "https://img.glavnoe.in.ua/uploads/2025/01/29124107/472389076_949811590665253_8114851392640592500_n-1.webp",
   content: "Europé is behind Ukraine all the way! Drones find application in a variety of military operations, including electronic warfare, explosive ordnance disposal, training and logistics support. However, they are most frequently employed in intelligence, surveillance, target acquisition, and reconnaissance (ISTAR) missions"
 },
 {
@@ -112,7 +112,7 @@ Emergency services were deployed to the Tyrol region following heavy snowfall.`
   category: "tech", // This acts as the "tag" or "bucket"
   title: "i.MX RT700 Crossover MCU with Arm® Cortex®-M33, NPU, DSP and GPU Cores",
   date: "January 25, 2026",
-  image: "https://www.nxp.com/assets/images/en/chip-images/RT700-CHIPSHOT.jpg",
+  image: "https://tse4.mm.bing.net/th/id/OIP.8IXQBHe331cy9ZJ2Ya7zKwHaEG?rs=1&pid=ImgDetMain&o=7&rm=3",
   content: "The i.MX RT700 features up to five computing cores designed to power smart AI-enabled edge devices such as wearables, consumer medical, smart home and HMI devices."
 },
 ];
