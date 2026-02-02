@@ -18,7 +18,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <nav className="nav-padding">
+          <nav className="container mx-auto px-4 py-4">
             <ul className="flex gap-2">
               <li>
                 <Link href="/">Home</Link>
