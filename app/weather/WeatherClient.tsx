@@ -9,14 +9,23 @@ type Props = {
 
 export default function WeatherClient({ city }: Props) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
-  const [fetchTime, setFetchTime] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchWeather() {
+      setLoading(true);
+      setError(null);
+
       try {
+        const apiBaseUrl =
+          process.env.NEXT_PUBLIC_WEATHER_API_URL ||
+          "https://weather.lexlink.se";
         const response = await fetch(
-          `https://weather.lexlink.se/forecast/location/${encodeURIComponent(city)}`,
+          `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
+          { signal: controller.signal },
         );
 
         if (!response.ok) {
@@ -26,30 +35,35 @@ export default function WeatherClient({ city }: Props) {
           throw new Error("Failed to fetch weather data");
         }
 
-        const data = await response.json();
+        const data: WeatherType = await response.json();
         setWeather(data);
-        setFetchTime(new Date().toLocaleTimeString());
-        setError(null);
       } catch (err) {
+        if (err instanceof Error && err.name === "AbortError") {
+          return; // Request was aborted
+        }
         setError(err instanceof Error ? err.message : "Unexpected error");
+      } finally {
+        setLoading(false);
       }
     }
 
     fetchWeather();
+
+    return () => {
+      controller.abort();
+    };
   }, [city]);
-
-  if (error) {
-    return <p className="text-red-600">{error}</p>;
-  }
-
-  if (!weather) {
-    return <p>Loading weather…</p>;
-  }
 
   return (
     <div>
-      <p>Last updated: {fetchTime}</p>
-      <pre>{JSON.stringify(weather, null, 2)}</pre>
+      {loading && <p>Loading weather data...</p>}
+      {error && <p>Error: {error}</p>}
+      {weather && (
+        <div>
+          <h2>Weather in {city}</h2>
+          <pre>{JSON.stringify(weather, null, 2)}</pre>
+        </div>
+      )}
     </div>
   );
 }
