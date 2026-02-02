@@ -8,7 +8,7 @@ import Stripe from "stripe";
 import prisma from "./prisma";
 import { nextCookies } from "better-auth/next-js";
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
+  apiVersion: "2026-01-28.clover", // Updated API version as required
 });
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
