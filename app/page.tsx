@@ -55,7 +55,7 @@ export default function LandingPage() {
                 {editorsHeadline.title}
               </h4>
               <p className="text-gray-700 dark:text-gray-300 text-lg">
-                {editorsHeadline.content.substring(0, 150)}...
+                {editorsHeadline.content.length > 150 ? `${editorsHeadline.content.substring(0, 150)}...` : editorsHeadline.content}
               </p>
             </div>
           </Link>
