@@ -1,12 +1,17 @@
 import { articles } from "@/data/articles";
 
-export default async function ArticleDetail({
-  params,
-}: {
-  params: { id: string };
-}) {
+type Props = {
+  params: {
+    id: string;
+  };
+};
+
+export default function ArticleDetail({ params }: Props) {
   const article = articles.find((a) => a.id === params.id);
-  if (!article) return <p>Not found</p>;
+
+  if (!article) {
+    return <p>Not found</p>;
+  }
 
   return (
     <article>
