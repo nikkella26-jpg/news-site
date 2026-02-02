@@ -18,6 +18,7 @@ export default function WeatherClient({ city }: Props) {
     async function fetchWeather() {
       setLoading(true);
       setError(null);
+      setWeather(null);
 
       try {
         const apiBaseUrl =
