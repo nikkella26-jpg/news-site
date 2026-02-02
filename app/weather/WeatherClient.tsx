@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { WeatherType } from "../../types/weather-types";
 
 type Props = {
@@ -11,9 +11,11 @@ export default function WeatherClient({ city }: Props) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const requestIdRef = useRef(0);
 
   useEffect(() => {
     const controller = new AbortController();
+    const currentRequestId = ++requestIdRef.current;
 
     async function fetchWeather() {
       setLoading(true);
@@ -36,18 +38,18 @@ export default function WeatherClient({ city }: Props) {
         }
 
         const data: WeatherType = await response.json();
-        if (!controller.signal.aborted) {
+        if (currentRequestId === requestIdRef.current) {
           setWeather(data);
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
           return; // Request was aborted
         }
-        if (!controller.signal.aborted) {
+        if (currentRequestId === requestIdRef.current) {
           setError(err instanceof Error ? err.message : "Unexpected error");
         }
       } finally {
-        if (!controller.signal.aborted) {
+        if (currentRequestId === requestIdRef.current) {
           setLoading(false);
         }
       }
