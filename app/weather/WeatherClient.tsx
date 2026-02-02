@@ -1,19 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { WeatherType } from "../../types/weather-types";
 
 type Props = {
   city: string;
 };
 
 export default function WeatherClient({ city }: Props) {
-  type WeatherData = {
-    temperature: number;
-    description: string;
-    [key: string]: unknown;
-  };
-
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState<WeatherType | null>(null);
   const [fetchTime, setFetchTime] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
