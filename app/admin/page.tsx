@@ -3,7 +3,13 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getAdminStats } from "./actions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, FileText, CreditCard, LayoutDashboard, PlusCircle } from "lucide-react";
+import {
+  Users,
+  FileText,
+  CreditCard,
+  LayoutDashboard,
+  PlusCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
@@ -49,14 +55,16 @@ export default async function AdminPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Subscriptions
+            </CardTitle>
             <CreditCard className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.activeSubscriptions}</div>
-            <p className="text-xs text-muted-foreground">
-              Paying members
-            </p>
+            <div className="text-2xl font-bold">
+              {stats.activeSubscriptions}
+            </div>
+            <p className="text-xs text-muted-foreground">Paying members</p>
           </CardContent>
         </Card>
 
@@ -75,7 +83,9 @@ export default async function AdminPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Estimated Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Estimated Revenue
+            </CardTitle>
             <div className="text-xs font-bold text-green-600">SEK</div>
           </CardHeader>
           <CardContent>
@@ -96,13 +106,19 @@ export default async function AdminPage() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4">
             <Link href="/admin/users">
-              <Button variant="outline" className="w-40 h-24 flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className="w-40 h-24 flex flex-col gap-2"
+              >
                 <Users className="h-6 w-6" />
                 Manage Users
               </Button>
             </Link>
             <Link href="/admin/articles">
-              <Button variant="outline" className="w-40 h-24 flex flex-col gap-2">
+              <Button
+                variant="outline"
+                className="w-40 h-24 flex flex-col gap-2"
+              >
                 <FileText className="h-6 w-6" />
                 Manage Articles
               </Button>
