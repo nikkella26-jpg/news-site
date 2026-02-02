@@ -13,7 +13,7 @@ export default function WeatherClient({ city }: Props) {
     [key: string]: unknown;
   };
 
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState<WeatherType | null>(null);
   const [fetchTime, setFetchTime] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
