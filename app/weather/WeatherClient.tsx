@@ -1,18 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { WeatherType } from "../../types/weather-types";
 
 type Props = {
   city: string;
 };
 
 export default function WeatherClient({ city }: Props) {
-  type WeatherData = {
-    temperature: number;
-    description: string;
-    [key: string]: unknown;
-  };
-
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const [fetchTime, setFetchTime] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +16,7 @@ export default function WeatherClient({ city }: Props) {
     async function fetchWeather() {
       try {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_WEATHER_API_URL}/forecast/location/${encodeURIComponent(city)}`
+          `https://weather.lexlink.se/forecast/location/${encodeURIComponent(city)}`,
         );
 
         if (!response.ok) {
