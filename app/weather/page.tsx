@@ -1,11 +1,11 @@
 import WeatherClient from "./WeatherClient";
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams?: { city?: string };
+  searchParams: Promise<{ city?: string }>;
 }) {
-  const city = searchParams?.city ?? "Linköping";
+  const { city = "Linköping" } = await searchParams;
 
   return (
     <div className="flex flex-col gap-8 w-full">
