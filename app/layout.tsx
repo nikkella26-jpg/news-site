@@ -19,7 +19,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <nav className="nav-padding">
-            <Link href="/">Home</Link> | <Link href="/weather">Weather</Link>
+            <ul className="flex gap-2">
+              <li>
+                <Link href="/">Home</Link>
+              </li>
+              <li>
+                <Link href="/weather">Weather</Link>
+              </li>
+            </ul>
           </nav>
 
           <Header />
