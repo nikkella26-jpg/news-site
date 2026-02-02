@@ -21,7 +21,7 @@ export default function WeatherClient({ city }: Props) {
     async function fetchWeather() {
       try {
         const response = await fetch(
-          `https://weather.lexlink.se/forecast/location/${encodeURIComponent(city)}`,
+          `${process.env.NEXT_PUBLIC_WEATHER_API_URL}/forecast/location/${encodeURIComponent(city)}`
         );
 
         if (!response.ok) {
