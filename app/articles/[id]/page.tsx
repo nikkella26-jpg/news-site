@@ -1,4 +1,5 @@
 import { articles } from "@/data/articles";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: {
@@ -22,4 +23,3 @@ export default function ArticleDetail({ params }: Props) {
     </article>
   );
 }
-//
