@@ -10,7 +10,7 @@ export default function ArticleDetail({ params }: Props) {
   const article = articles.find((a) => a.id === params.id);
 
   if (!article) {
-    return <p>Not found</p>;
+    notFound();
   }
 
   return (
