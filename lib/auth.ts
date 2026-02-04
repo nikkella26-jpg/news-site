@@ -16,14 +16,10 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: false,
 
     sendResetPassword: async ({ user, url }) => {
-      await sendMail(
-        user.email,
-        "Reset your password",
-        `Click the link to reset your password: ${url}`,
-      );
+      await sendMail(user.email, "Reset your password", `Click the link to reset your password: ${url}`);
     },
     onPasswordReset: async ({ user }) => {
       console.log(`Password for user ${user.email} has been reset.`);
@@ -31,11 +27,7 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      await sendMail(
-        user.email,
-        "Verify your email address",
-        `Click the link to verify your email: ${url}`,
-      );
+      await sendMail(user.email, "Verify your email address", `Click the link to verify your email: ${url}`);
     },
   },
   plugins: [
