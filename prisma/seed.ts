@@ -5,10 +5,12 @@ async function main() {
   console.log('Seeding database...');
   
   // Cleanup existing data to avoid conflicts if re-running
-  await prisma.article.deleteMany({});
-  await prisma.subscription.deleteMany({});
-  await prisma.subscriptionType.deleteMany({});
-  await prisma.category.deleteMany({});
+  await prisma.$transaction([
+    prisma.article.deleteMany({}),
+    prisma.subscription.deleteMany({}),
+    prisma.subscriptionType.deleteMany({}),
+    prisma.category.deleteMany({}),
+  ]);
   // Keeping users for now or handle them via upsert
   
   console.log('Data cleaned up.');
