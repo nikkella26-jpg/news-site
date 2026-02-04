@@ -83,7 +83,7 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@index([identifier])
-  @@map("verification")
+  @@map("verification")https://github.com/nikkella26-jpg/news-site/pull/50/conflict?name=prisma%252Fschema.prisma&ancestor_oid=7d451a7fa9c0996277a89df06dd349897a9a515a&base_oid=0cafa78246424d6424255d6c7418b61ec0dc18c5&head_oid=4dafc96b2552309651d972c384d8ab26a23b850a
 }
 
 model Subscription {
@@ -107,34 +107,4 @@ model Subscription {
 
   @@index([userId])
   @@map("subscription")
-}
-
-model Article {
-  id              String   @id @default(cuid())
-  title           String
-  slug            String   @unique
-  content         String
-  image           String?
-  published       Boolean  @default(false)
-  isEditorsChoice Boolean  @default(false)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  authorId        String
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  categoryId      String?
-  category        Category? @relation(fields: [categoryId], references: [id])
-
-  @@map("article")
-}
-
-model Category {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
-  articles Article[]
-
-  @@map("category")
 }
