@@ -54,7 +54,7 @@ export async function createArticle(data: {
   const article = await prisma.article.create({
     data: {
       title: data.title,
-      slug: `${slug}-${Math.random().toString(36).substring(2, 7)}`,
+      slug: `${slug}-${Date.now()}`,
       content: data.content,
       published: data.published ?? false,
       isEditorsChoice: data.isEditorsChoice ?? false,
