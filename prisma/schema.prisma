@@ -13,18 +13,30 @@ datasource db {
   provider = "postgresql"
 }
 
+enum Role {
+  USER
+  EDITOR
+  ADMIN
+}
+
 model User {
-  id            String    @id
+  id            String    @id @default(cuid())
   name          String
-  email         String
-  emailVerified Boolean   @default(false)
+  email         String    @unique
+  password      String?
+  role          Role      @default(USER)
+  emailVerified Boolean?  @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  
   sessions      Session[]
   accounts      Account[]
-
-  role             String?
+  subscriptions Subscription[]
+  
+  // Existing fields from previous schema kept for safety if needed, 
+  // but logically "banned" etc. were not in the new prompt. 
+  // keeping them optional to not break valid data if present.
   banned           Boolean?       @default(false)
   banReason        String?
   banExpires       DateTime?
@@ -32,14 +44,13 @@ model User {
   subscriptions    Subscription[]
   articles         Article[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(cuid())
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -49,13 +60,12 @@ model Session {
 
   impersonatedBy String?
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(cuid())
   accountId             String
   providerId            String
   userId                String
@@ -75,7 +85,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(cuid())
   identifier String
   value      String
   expiresAt  DateTime
@@ -86,12 +96,56 @@ model Verification {
   @@map("verification")
 }
 
+model Article {
+  id           String   @id @default(cuid())
+  headline     String
+  summary      String?
+  content      String
+  image        String?
+  views        Int      @default(0)
+  editorChoice Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  categoryId   String
+  category     Category @relation(fields: [categoryId], references: [id])
+
+  @@map("article")
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  articles Article[]
+
+  @@map("category")
+}
+
+model SubscriptionType {
+  id            String         @id @default(cuid())
+  name          String
+  description   String
+  price         Float
+  subscriptions Subscription[]
+
+  @@map("subscription_type")
+}
+
 model Subscription {
-  id                   String    @id
-  plan                 String
+  id                 String           @id @default(cuid())
+  status             String
+  createdAt          DateTime         @default(now())
+  expiresAt          DateTime?
+  
+  userId             String
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  subscriptionTypeId String
+  subscriptionType   SubscriptionType @relation(fields: [subscriptionTypeId], references: [id])
+
+  // Keeping stripe fields as optional to facilitate potential migration/fallback
   stripeCustomerId     String?
   stripeSubscriptionId String?
-  status               String?   @default("incomplete")
   periodStart          DateTime?
   periodEnd            DateTime?
   trialStart           DateTime?
@@ -101,9 +155,6 @@ model Subscription {
   canceledAt           DateTime?
   endedAt              DateTime?
   seats                Int?
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("subscription")
