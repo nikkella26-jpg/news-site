@@ -31,7 +31,10 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    admin(),
+    admin({
+      defaultRole: "user",
+      roles: ["admin", "user", "editor"],
+    }),
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
