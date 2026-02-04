@@ -24,7 +24,7 @@ export default function LandingPage() {
         <h2 className="text-2xl mb-4">Latest News</h2>
         <div className="grid md:grid-cols-3 gap-6">
           {articles.slice(0, 5).map((a) => (
-            <ArticleCard key={a.id} article={a} />
+            <ArticleCard key={a.id} article={a} imageSize={undefined} />
           ))}
         </div>
       </section>
@@ -35,7 +35,7 @@ export default function LandingPage() {
           {articles
             .filter((a) => a.editorPick)
             .map((a) => (
-              <ArticleCard key={a.id} article={a} />
+              <ArticleCard key={a.id} article={a} imageSize={undefined} />
             ))}
         </div>
       </section>
@@ -61,7 +61,7 @@ export default function LandingPage() {
                 {editorsHeadline.title}
               </h4>
               <p className="text-gray-700 dark:text-gray-300 text-lg">
-                {editorsHeadline.excerpt}
+                {editorsHeadline.content}
               </p>
             </div>
           </Link>
