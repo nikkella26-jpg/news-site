@@ -29,6 +29,7 @@ export async function getArticles() {
 }
 
 export async function getCategories() {
+  await checkAuth();
   return await prisma.category.findMany({
     orderBy: { name: "asc" },
   });
