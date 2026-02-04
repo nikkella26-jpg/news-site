@@ -11,11 +11,9 @@ export default function WeatherClient({ city }: Props) {
   const [weather, setWeather] = useState<WeatherType | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const requestIdRef = useRef(0);
 
   useEffect(() => {
     const controller = new AbortController();
-    const currentRequestId = ++requestIdRef.current;
 
     async function fetchWeather() {
       setLoading(true);
