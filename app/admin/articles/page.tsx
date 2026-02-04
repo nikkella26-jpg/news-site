@@ -10,8 +10,7 @@ import {
 } from "./actions";
 import { Button } from "@/components/ui/button";
 
-// Import or define the Article and Category types
-import type { Article, Category } from "@/types";
+import type { Article, Category } from "@/lib/generated/prisma";
 import {
   Table,
   TableBody,
@@ -66,9 +65,7 @@ export default async function ArticlesPage() {
     <div className="p-6 max-w-7xl mx-auto space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Manage Articles
-          </h1>
+          <h1 className="text-3xl font-bold tracking-tight">Manage Articles</h1>
           <p className="text-muted-foreground">
             Create, edit and organize your news.
           </p>
@@ -90,10 +87,7 @@ export default async function ArticlesPage() {
               Categories
             </h2>
             <form action={handleCreateCategory} className="flex gap-2 mb-4">
-              <Input
-                name="name"
-                placeholder="New category..."
-              />
+              <Input name="name" placeholder="New category..." />
               <Button type="submit" size="sm">
                 Add
               </Button>
@@ -133,13 +127,13 @@ export default async function ArticlesPage() {
                       <div>
                         {article.title}
                         <div className="text-xs text-muted-foreground font-normal">
-                          by {article.author.name}
+                          by {article.authorId}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell>
-                      {article.category ? (
-                        <Badge variant="outline">{article.category.name}</Badge>
+                      {article.categoryId ? (
+                        <Badge variant="outline">{article.categoryId}</Badge>
                       ) : (
                         <span className="text-muted-foreground text-xs italic">
                           None
