@@ -93,7 +93,7 @@ async function main() {
 
   // 4. Articles
   const swedenCategory = await prisma.category.findUnique({ where: { name: 'Sweden' } });
-  const techCategory = await prisma.category.findUnique({ where: { name: 'Economy' } });
+  const economyCategory = await prisma.category.findUnique({ where: { name: 'Economy' } });
 
   if (swedenCategory) {
     await prisma.article.create({
