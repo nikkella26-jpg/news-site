@@ -25,13 +25,15 @@ async function main() {
     'Sports',
   ];
 
-  for (const name of categories) {
-    await prisma.category.upsert({
-      where: { name },
-      update: {},
-      create: { name },
-    });
-  }
+  await Promise.all(
+    categories.map((name) =>
+      prisma.category.upsert({
+        where: { name },
+        update: {},
+        create: { name },
+      })
+    )
+  );
   console.log('Categories seeded.');
 
   // 2. Subscription Types
