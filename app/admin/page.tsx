@@ -90,7 +90,7 @@ export default async function AdminPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {stats.activeSubscriptions * 99} kr
+              {stats.activeSubscriptions * (process.env.SUBSCRIPTION_PRICE_SEK || 99)} kr
             </div>
             <p className="text-xs text-muted-foreground">
               Based on 99 SEK/month
