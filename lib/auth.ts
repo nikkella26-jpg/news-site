@@ -33,7 +33,7 @@ export const auth = betterAuth({
   plugins: [
     admin({
       defaultRole: "user",
-      roles: ["admin", "user", "editor"],
+      roles: ["admin", "user", "editor"] as any,
     }),
     stripe({
       stripeClient,
