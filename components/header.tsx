@@ -15,6 +15,8 @@ export default function Header() {
             News
           </Link>
 
+          <Link href="/weather">Weather</Link>
+
           {categories.map((cat) => (
             <Link key={cat} href={`/category/${cat.toLowerCase()}`}>
               {cat}

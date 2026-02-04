@@ -9,6 +9,9 @@ import {
   createCategory,
 } from "./actions";
 import { Button } from "@/components/ui/button";
+
+// Import or define the Article and Category types
+import type { Article, Category } from "@/types";
 import {
   Table,
   TableBody,
@@ -21,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Star, Plus, FolderPlus } from "lucide-react";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { Input } from "@/components/ui/input";
 
 export default async function ArticlesPage() {
   const session = await auth.api.getSession({
@@ -34,7 +38,7 @@ export default async function ArticlesPage() {
     redirect("/");
   }
 
-  const [articles, categories] = await Promise.all([
+  const [articles, categories]: [Article[], Category[]] = await Promise.all([
     getArticles(),
     getCategories(),
   ]);
@@ -95,7 +99,7 @@ export default async function ArticlesPage() {
               </Button>
             </form>
             <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
+              {categories.map((cat: Category) => (
                 <Badge key={cat.id} variant="secondary">
                   {cat.name}
                 </Badge>
