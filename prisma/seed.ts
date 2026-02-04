@@ -43,11 +43,15 @@ async function main() {
     { name: 'Family', description: 'Access for the whole family', price: 149 },
   ];
 
-  for (const st of subTypes) {
-    await prisma.subscriptionType.create({
-      data: st,
-    });
-  }
+  await Promise.all(
+    subTypes.map((st) =>
+      prisma.subscriptionType.upsert({
+        where: { name: st.name },
+        update: {},
+        create: st,
+      })
+    )
+  );
   console.log('SubscriptionTypes seeded.');
 
   // 3. Users
