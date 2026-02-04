@@ -23,7 +23,7 @@ export default function SubscribeCTA({ className, children }: Props) {
   };
 
   return (
-    <Button onClick={handleClick} className={className ?? "bg-blue-600 hover:bg-blue-700"}>
+    <Button onClick={handleClick} className={className}>
       {children ?? "Subscribe"}
     </Button>
   );
