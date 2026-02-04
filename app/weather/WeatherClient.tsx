@@ -20,6 +20,7 @@ export default function WeatherClient({ city }: Props) {
     async function fetchWeather() {
       setLoading(true);
       setError(null);
+      setWeather(null);
 
       try {
         const apiBaseUrl =
@@ -38,18 +39,18 @@ export default function WeatherClient({ city }: Props) {
         }
 
         const data: WeatherType = await response.json();
-        if (currentRequestId === requestIdRef.current) {
+        if (!controller.signal.aborted) {
           setWeather(data);
         }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
           return; // Request was aborted
         }
-        if (currentRequestId === requestIdRef.current) {
+        if (!controller.signal.aborted) {
           setError(err instanceof Error ? err.message : "Unexpected error");
         }
       } finally {
-        if (currentRequestId === requestIdRef.current) {
+        if (!controller.signal.aborted) {
           setLoading(false);
         }
       }
@@ -66,7 +67,7 @@ export default function WeatherClient({ city }: Props) {
     <div>
       {loading && <p>Loading weather data...</p>}
       {error && <p>Error: {error}</p>}
-      {weather && (
+      {weather && !loading && (
         <div>
           <h2>Weather in {city}</h2>
           <pre>{JSON.stringify(weather, null, 2)}</pre>
