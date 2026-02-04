@@ -36,14 +36,20 @@ export default function WeatherClient({ city }: Props) {
         }
 
         const data: WeatherType = await response.json();
-        setWeather(data);
+        if (!controller.signal.aborted) {
+          setWeather(data);
+        }
       } catch (err) {
         if (err instanceof Error && err.name === "AbortError") {
           return; // Request was aborted
         }
-        setError(err instanceof Error ? err.message : "Unexpected error");
+        if (!controller.signal.aborted) {
+          setError(err instanceof Error ? err.message : "Unexpected error");
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }
 
