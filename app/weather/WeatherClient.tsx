@@ -58,7 +58,7 @@ export default function WeatherClient({ city }: Props) {
     <div>
       {loading && <p>Loading weather data...</p>}
       {error && <p>Error: {error}</p>}
-      {weather && (
+      {weather && !loading && (
         <div>
           <h2>Weather in {city}</h2>
           <pre>{JSON.stringify(weather, null, 2)}</pre>
