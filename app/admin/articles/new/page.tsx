@@ -25,7 +25,7 @@ export default async function NewArticlePage() {
 
   if (
     !session ||
-    (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")
+    (session.user.role !== "admin" && session.user.role !== "editor")
   ) {
     redirect("/");
   }

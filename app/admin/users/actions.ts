@@ -39,7 +39,7 @@ export async function updateUserRole(userId: string, role: string) {
   await auth.api.setRole({
     body: {
       userId,
-      role: role as "user" | "admin",
+      role: role as "user" | "admin" | "editor",
     },
     headers: await headers(),
   });

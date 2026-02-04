@@ -29,7 +29,7 @@ export default async function ArticlesPage() {
 
   if (
     !session ||
-    (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")
+    (session.user.role !== "admin" && session.user.role !== "editor")
   ) {
     redirect("/");
   }

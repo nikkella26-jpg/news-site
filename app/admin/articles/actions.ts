@@ -9,7 +9,7 @@ async function checkAuth() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  if (!session || (session.user.role !== "ADMIN" && session.user.role !== "EDITOR")) {
+  if (!session || (session.user.role !== "admin" && session.user.role !== "editor")) {
     throw new Error("Unauthorized");
   }
   return session;

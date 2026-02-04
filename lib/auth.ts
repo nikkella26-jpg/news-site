@@ -15,7 +15,10 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   plugins: [
-    admin(),
+    admin({
+      defaultRole: "user",
+      roles: ["admin", "user", "editor"],
+    }),
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
