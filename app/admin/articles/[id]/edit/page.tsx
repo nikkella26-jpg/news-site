@@ -22,9 +22,9 @@ import { ArrowLeft } from "lucide-react";
 export default async function EditArticlePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
