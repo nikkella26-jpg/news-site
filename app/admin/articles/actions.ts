@@ -104,8 +104,8 @@ export async function toggleEditorsChoice(id: string, currentStatus: boolean) {
 
 export async function createCategory(name: string) {
   await checkAuth();
-  const slug = name.toLowerCase().replace(/\s+/g, "-");
+  const slug = name.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
   return await prisma.category.create({
-    data: { name, slug },
+    data: { name, slug: `${slug}-${Date.now()}` },
   });
 }
