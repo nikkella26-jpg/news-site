@@ -14,10 +14,11 @@ export default function SubscribeCTA({ className, children }: Props) {
   const router = useRouter();
 
   const handleClick = () => {
+    const subscribePath = "/subscribe";
     if (session.data) {
-      router.push("/subscribe");
+      router.push(subscribePath);
     } else {
-      router.push("/login?redirect=/subscribe");
+      router.push(`/login?redirect=${subscribePath}`);
     }
   };
 
