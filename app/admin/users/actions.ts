@@ -6,6 +6,14 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 export async function getAllUsers() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session || session.user.role !== "admin") {
+    throw new Error("Unauthorized");
+  }
+
   return prisma.user.findMany({
     select: {
       id: true,
