@@ -17,4 +17,11 @@ npm run dev
 
 npx install better-auth -- all
 
+#update check if you must!
+
+npm i --save-dev prisma@latest
+npm i @prisma/client@latest
+npm install better-auth@latest
+npm install @prisma/adapter-pg@latest
+
 ```
