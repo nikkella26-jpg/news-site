@@ -15,7 +15,13 @@ export default function Header() {
             News
           </Link>
 
-          <Link href="/weather">Weather</Link>
+          {/* Newsfeed Button */}
+          <Link
+            href="/articles"
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            Newsfeed
+          </Link>
 
           {categories.map((cat) => (
             <Link key={cat} href={`/category/${cat.toLowerCase()}`}>

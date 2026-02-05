@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin } from "better-auth/plugins";
+import { admin as adminPlugin } from "better-auth/plugins";
+import { ac, admin, editor, user } from "./permissions";
 import { sendMail } from "./mail";
 import { stripe } from "@better-auth/stripe";
 import Stripe from "stripe";
@@ -19,7 +20,11 @@ export const auth = betterAuth({
     requireEmailVerification: false,
 
     sendResetPassword: async ({ user, url }) => {
-      await sendMail(user.email, "Reset your password", `Click the link to reset your password: ${url}`);
+      await sendMail(
+        user.email,
+        "Reset your password",
+        `Click the link to reset your password: ${url}`,
+      );
     },
     onPasswordReset: async ({ user }) => {
       console.log(`Password for user ${user.email} has been reset.`);
@@ -27,13 +32,21 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      await sendMail(user.email, "Verify your email address", `Click the link to verify your email: ${url}`);
+      await sendMail(
+        user.email,
+        "Verify your email address",
+        `Click the link to verify your email: ${url}`,
+      );
     },
   },
   plugins: [
-    admin({
-      defaultRole: "user",
-      roles: ["admin", "user", "editor"] as any,
+    adminPlugin({
+      ac,
+      roles: {
+        admin,
+        user,
+        editor,
+      },
     }),
     stripe({
       stripeClient,
