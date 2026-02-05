@@ -15,7 +15,7 @@ export default async function Page({
         bg-linear-to-b
         from-slate-200
         via-cyan-100
-       to-stone-100
+        to-stone-100
         "
       />
       <WeatherClient city={city} />
