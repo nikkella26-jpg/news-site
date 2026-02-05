@@ -22,8 +22,9 @@ export default function WeatherClient({ city }: Props) {
 
       try {
         const apiBaseUrl =
-          process.env.NEXT_PUBLIC_WEATHER_API_URL ||
+          process.env.NEXT_PUBLIC_WEATHER_API_URL ??
           "https://weather.lexlink.se";
+
         const response = await fetch(
           `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
           { signal: controller.signal },
@@ -37,13 +38,13 @@ export default function WeatherClient({ city }: Props) {
         }
 
         const data: WeatherType = await response.json();
+
         if (!controller.signal.aborted) {
           setWeather(data);
         }
       } catch (err) {
-        if (err instanceof Error && err.name === "AbortError") {
-          return; // Request was aborted
-        }
+        if (err instanceof Error && err.name === "AbortError") return;
+
         if (!controller.signal.aborted) {
           setError(err instanceof Error ? err.message : "Unexpected error");
         }
@@ -56,19 +57,73 @@ export default function WeatherClient({ city }: Props) {
 
     fetchWeather();
 
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, [city]);
 
   return (
-    <div>
-      {loading && <p>Loading weather data...</p>}
-      {error && <p>Error: {error}</p>}
+    <div className="relative">
+      {/* Loading state */}
+      {loading && (
+        <div className="max-w-6xl mx-auto px-4 py-20">
+          <p className="text-center text-slate-600">Loading weather data…</p>
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <div className="max-w-6xl mx-auto px-4 py-20">
+          <p className="text-center text-red-600">{error}</p>
+        </div>
+      )}
+
+      {/* Weather content */}
       {weather && !loading && (
-        <div>
-          <h2>Weather in {city}</h2>
-          <pre>{JSON.stringify(weather, null, 2)}</pre>
+        <div className="max-w-6xl mx-auto px-4 pb-20">
+          {/* Header */}
+          <section className="pt-10 pb-6">
+            <h1 className="text-2xl font-semibold text-slate-800">
+              Weather in {city}
+            </h1>
+            <p className="mt-1 text-slate-600">Hourly forecast</p>
+          </section>
+
+          {/* Forecast grid */}
+          <section>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {weather.timeseries.slice(0, 24).map((time) => (
+                <div
+                  key={time.validTime}
+                  className="
+                    rounded-2xl
+                    bg-white/55
+                    backdrop-blur-sm
+                    border border-white/40
+                    shadow-sm shadow-slate-900/5
+                    p-4
+                    text-center
+                  "
+                >
+                  <p className="text-xs text-slate-500 tracking-wide">
+                    {new Date(time.validTime).toLocaleString("sv-SE", {
+                      weekday: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+
+                  <p className="mt-2 text-2xl font-semibold text-slate-800">
+                    {Math.round(time.temp)}°
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-600">{time.summary}</p>
+
+                  <p className="mt-1 text-[11px] text-slate-500">
+                    Humidity {time.humidity}%
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       )}
     </div>
