@@ -20,7 +20,7 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   name          String
   email         String    @unique
   password      String?
@@ -32,7 +32,7 @@ model User {
   
   sessions      Session[]
   accounts      Account[]
-  subscriptions Subscription[]
+  
   
   // Existing fields from previous schema kept for safety if needed, 
   // but logically "banned" etc. were not in the new prompt. 
@@ -48,7 +48,7 @@ model User {
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
@@ -65,7 +65,7 @@ model Session {
 }
 
 model Account {
-  id                    String    @id @default(cuid())
+  id                    String    @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
@@ -85,7 +85,7 @@ model Account {
 }
 
 model Verification {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
@@ -96,25 +96,11 @@ model Verification {
   @@map("verification")
 }
 
-model Article {
-  id           String   @id @default(cuid())
-  headline     String
-  summary      String?
-  content      String
-  image        String?
-  views        Int      @default(0)
-  editorChoice Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 
-  categoryId   String
-  category     Category @relation(fields: [categoryId], references: [id])
 
-  @@map("article")
-}
 
 model Category {
-  id       String    @id @default(cuid())
+  id       String    @id @default(uuid())
   name     String    @unique
   articles Article[]
 
@@ -122,7 +108,7 @@ model Category {
 }
 
 model SubscriptionType {
-  id            String         @id @default(cuid())
+  id            String         @id @default(uuid())
   name          String
   description   String
   price         Float
@@ -132,7 +118,7 @@ model SubscriptionType {
 }
 
 model Subscription {
-  id                 String           @id @default(cuid())
+  id                 String           @id @default(uuid())
   status             String
   createdAt          DateTime         @default(now())
   expiresAt          DateTime?
@@ -161,7 +147,7 @@ model Subscription {
 }
 
 model Article {
-  id              String   @id @default(cuid())
+  id              String   @id @default(uuid())
   title           String
   slug            String   @unique
   content         String
@@ -181,11 +167,3 @@ model Article {
   @@map("article")
 }
 
-model Category {
-  id       String    @id @default(cuid())
-  name     String
-  slug     String    @unique
-  articles Article[]
-
-  @@map("category")
-}
