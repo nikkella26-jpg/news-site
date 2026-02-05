@@ -8,7 +8,14 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Link from "next/link";
 
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -42,7 +49,8 @@ export default function LoginPage() {
       toast.success("Welcome back!");
       router.push("/"); // Redirect to home
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Login failed";
+      const errorMessage =
+        error instanceof Error ? error.message : "Login failed";
       toast.error(errorMessage);
     }
   }
@@ -85,7 +93,11 @@ export default function LoginPage() {
             />
 
             {/* Submit button with loading state */}
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? "Logging in..." : "Login"}
             </Button>
 
