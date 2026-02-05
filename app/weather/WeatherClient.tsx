@@ -21,9 +21,15 @@ export default function WeatherClient({ city }: Props) {
       setWeather(null);
 
       try {
-        const apiBaseUrl =
-          process.env.NEXT_PUBLIC_WEATHER_API_URL ??
-          "https://weather.lexlink.se";
+        if (!process.env.NEXT_PUBLIC_WEATHER_API_URL) {
+          throw new Error(
+            "Please set NEXT_PUBLIC_WEATHER_API_URL in your .env",
+          );
+        }
+        const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL.replace(
+          /\/+$/,
+          "",
+        );
 
         const response = await fetch(
           `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
@@ -38,6 +44,10 @@ export default function WeatherClient({ city }: Props) {
         }
 
         const data: WeatherType = await response.json();
+
+        if (!data || !Array.isArray(data.timeseries)) {
+          throw new Error("Unexpected weather data format");
+        }
 
         if (!controller.signal.aborted) {
           setWeather(data);
@@ -89,40 +99,48 @@ export default function WeatherClient({ city }: Props) {
 
           {/* Forecast grid */}
           <section>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {weather.timeseries.slice(0, 24).map((time) => (
-                <div
-                  key={time.validTime}
-                  className="
-                    rounded-2xl
-                    bg-white/55
-                    backdrop-blur-sm
-                    border border-white/40
-                    shadow-sm shadow-slate-900/5
-                    p-4
-                    text-center
-                  "
-                >
-                  <p className="text-xs text-slate-500 tracking-wide">
-                    {new Date(time.validTime).toLocaleString("sv-SE", {
-                      weekday: "short",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
+            {weather.timeseries.length === 0 ? (
+              <p className="text-center text-slate-600">
+                No forecast data available.
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {weather.timeseries.slice(0, 24).map((time) => (
+                  <div
+                    key={time.validTime}
+                    className="
+                      rounded-2xl
+                      bg-white/55
+                      backdrop-blur-sm
+                      border border-white/40
+                      shadow-sm shadow-slate-900/5
+                      p-4
+                      text-center
+                    "
+                  >
+                    <p className="text-xs text-slate-500 tracking-wide">
+                      {new Date(time.validTime).toLocaleString("sv-SE", {
+                        weekday: "short",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </p>
 
-                  <p className="mt-2 text-2xl font-semibold text-slate-800">
-                    {Math.round(time.temp)}°
-                  </p>
+                    <p className="mt-2 text-2xl font-semibold text-slate-800">
+                      {Math.round(time.temp)}°
+                    </p>
 
-                  <p className="mt-1 text-xs text-slate-600">{time.summary}</p>
+                    <p className="mt-1 text-xs text-slate-600">
+                      {time.summary}
+                    </p>
 
-                  <p className="mt-1 text-[11px] text-slate-500">
-                    Humidity {time.humidity}%
-                  </p>
-                </div>
-              ))}
-            </div>
+                    <p className="mt-1 text-[11px] text-slate-500">
+                      Humidity {time.humidity}%
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </div>
       )}
