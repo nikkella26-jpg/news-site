@@ -33,7 +33,7 @@ export default async function CategoryLayout({
       <footer className="bg-gray-200 text-center p-4 
                    text-slate-900 
                    dark:bg-slate-900 dark:text-slate-100">
-  <p>© 2026 The News Site</p>
+  <p>© 2026 The News Site - The Crucible Coders</p>
 </footer>
     </div>
   );

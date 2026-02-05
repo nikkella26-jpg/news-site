@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { admin } from "better-auth/plugins";
+import { admin as adminPlugin } from "better-auth/plugins";
+import { ac, admin, editor, user } from "./permissions";
 import { sendMail } from "./mail";
 import { stripe } from "@better-auth/stripe";
 import Stripe from "stripe";
@@ -16,7 +17,7 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: false,
 
     sendResetPassword: async ({ user, url }) => {
       await sendMail(
@@ -39,7 +40,14 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    admin(),
+    adminPlugin({
+      ac,
+      roles: {
+        admin,
+        user,
+        editor,
+      },
+    }),
     stripe({
       stripeClient,
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
