@@ -12,7 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-// Validation schema
 const loginSchema = z.object({
   email: z.email("Invalid email"),
   password: z.string().min(1, "Password required"),
@@ -23,13 +22,11 @@ type LoginValues = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const router = useRouter();
 
-  // react-hook-form setup
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  // Form submission
   async function onSubmit(values: LoginValues) {
     try {
       const res = await authClient.signIn.email(values);
@@ -40,7 +37,7 @@ export default function LoginPage() {
       }
 
       toast.success("Welcome back!");
-      router.push("/"); // Redirect to home
+      setTimeout(() => router.push("/"), 2000); // Redirect after toast displays
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Login failed";
       toast.error(errorMessage);
@@ -54,7 +51,6 @@ export default function LoginPage() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Email */}
             <FormField
               control={form.control}
               name="email"
@@ -69,7 +65,6 @@ export default function LoginPage() {
               )}
             />
 
-            {/* Password */}
             <FormField
               control={form.control}
               name="password"
@@ -84,19 +79,16 @@ export default function LoginPage() {
               )}
             />
 
-            {/* Submit button with loading state */}
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Logging in..." : "Login"}
             </Button>
 
-            {/* Forgot password */}
             <div className="text-center text-sm">
               <Link href="/forgot-password" className="underline text-blue-600">
                 Forgot password?
               </Link>
             </div>
 
-            {/* Register link */}
             <div className="text-center text-sm">
               Don&apos;t have an account?{" "}
               <Link href="/register" className="underline text-blue-600">

@@ -10,13 +10,13 @@ import Link from "next/link";
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Validate email
     if (!email?.includes("@")) {
-      toast.error("Please enter a valid email");
+      toast.error("Please enter a valid email address");
       return;
     }
 
@@ -31,7 +31,8 @@ export default function ForgotPasswordPage() {
         return;
       }
 
-      toast.success("Check your email for the reset link");
+      toast.success("Reset link sent! Check your email inbox");
+      setSent(true);
       setEmail("");
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to send reset link";
@@ -45,27 +46,41 @@ export default function ForgotPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <div className="w-full max-w-md space-y-6 p-6 bg-white rounded-xl shadow-md">
         <h1 className="text-2xl font-bold text-center">Forgot Password?</h1>
+        <p className="text-center text-sm text-gray-600">Enter your email address and we'll send you a link to reset your password.</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email
-            </label>
-            <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
+        {sent ? (
+          <div className="text-center space-y-4">
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <p className="text-sm text-green-800">✓ Reset link sent successfully!</p>
+              <p className="text-xs text-green-700 mt-2">Check your email for instructions to reset your password.</p>
+            </div>
+            <Link href="/login" className="block w-full mt-4">
+              <Button className="w-full">Back to Login</Button>
+            </Link>
           </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium">
+                Email Address
+              </label>
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} required />
+            </div>
 
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Sending..." : "Send reset link"}
-          </Button>
-        </form>
+            <Button type="submit" disabled={loading} className="w-full">
+              {loading ? "Sending..." : "Send Reset Link"}
+            </Button>
+          </form>
+        )}
 
-        {/* Back to login link */}
-        <div className="text-center text-sm">
-          Remember your password?{" "}
-          <Link href="/login" className="underline text-blue-600">
-            Back to login
-          </Link>
-        </div>
+        {!sent && (
+          <div className="text-center text-sm">
+            Remember your password?{" "}
+            <Link href="/login" className="underline text-blue-600 hover:text-blue-800">
+              Back to login
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

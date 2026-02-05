@@ -32,14 +32,13 @@ export default function RegisterPage() {
     try {
       const res = await authClient.signUp.email(values);
 
-      // Check for error response
       if (res?.error) {
         const errorMessage = res.error.message ?? "Registration failed";
 
-        // Check if it's an "already exists" error
+        // Already-registered detection (simple)
         if (errorMessage.toLowerCase().includes("already") || errorMessage.toLowerCase().includes("exist")) {
-          toast.error("Already you registered with this email");
-          router.push("/login");
+          toast.error("Already registered with this email");
+          setTimeout(() => router.push("/login"), 2000);
           return;
         }
 
@@ -47,18 +46,14 @@ export default function RegisterPage() {
         return;
       }
 
-      // If no error, registration was successful
       toast.success("Account created successfully!");
-
-      // Navigate to home page after successful registration
-      router.push("/");
+      setTimeout(() => router.push("/"), 2000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Registration failed";
 
-      // Check if it's an "already exists" error
       if (errorMessage.toLowerCase().includes("already") || errorMessage.toLowerCase().includes("exist")) {
-        toast.error("Already you registered with this email");
-        router.push("/login");
+        toast.error("Already registered with this email");
+        setTimeout(() => router.push("/login"), 2000);
         return;
       }
 
@@ -73,7 +68,6 @@ export default function RegisterPage() {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            {/* Name */}
             <FormField
               control={form.control}
               name="name"
@@ -88,7 +82,6 @@ export default function RegisterPage() {
               )}
             />
 
-            {/* Email */}
             <FormField
               control={form.control}
               name="email"
@@ -103,7 +96,6 @@ export default function RegisterPage() {
               )}
             />
 
-            {/* Password */}
             <FormField
               control={form.control}
               name="password"
@@ -118,12 +110,10 @@ export default function RegisterPage() {
               )}
             />
 
-            {/* Submit button with loading state */}
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? "Creating account..." : "Register"}
             </Button>
 
-            {/* Login link */}
             <div className="text-center text-sm">
               Already have an account?{" "}
               <Link href="/login" className="underline text-blue-600">
