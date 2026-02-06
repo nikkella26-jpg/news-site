@@ -14,30 +14,31 @@ datasource db {
 }
 
 enum Role {
-  USER
-  EDITOR
-  ADMIN
+  user
+  editor
+  admin
 }
 
-model User {
+
+
+ model User {
   id            String    @id @default(uuid())
   name          String
   email         String    @unique
   password      String?
-  role          Role      @default(USER)
+  role          Role      @default(user)
   emailVerified Boolean?  @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  
+
   sessions      Session[]
   accounts      Account[]
-  
-  
   // Existing fields from previous schema kept for safety if needed, 
   // but logically "banned" etc. were not in the new prompt. 
   // keeping them optional to not break valid data if present.
-  banned           Boolean?       @default(false)
+
+  banned           Boolean? @default(false)
   banReason        String?
   banExpires       DateTime?
   stripeCustomerId String?
@@ -46,6 +47,11 @@ model User {
 
   @@map("user")
 }
+
+  
+  
+  
+  
 
 model Session {
   id        String   @id @default(uuid())
@@ -166,4 +172,3 @@ model Article {
 
   @@map("article")
 }
-
