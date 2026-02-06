@@ -21,7 +21,7 @@ export default function HeroSlider() {
           {latest.map((article) => (
             <CarouselItem key={article.id}>
               <Link href={`/articles/${article.id}`}>
-                <div className="relative w-full h-[350px] md:h-[450px] rounded-xl overflow-hidden cursor-pointer">
+                <div className="relative w-full h-87.5 md:h-112.5 rounded-xl overflow-hidden cursor-pointer">
                   <Image
                     src={article.image}
                     alt={article.title}
@@ -30,13 +30,13 @@ export default function HeroSlider() {
                     priority
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/70 to-transparent" />
 
                   <div className="absolute bottom-6 left-6 text-white max-w-xl">
-                    <h2 className="text-3xl font-bold mb-2">
-                      {article.title}
-                    </h2>
-                    <p className="text-lg opacity-90">{article.excerpt}</p>
+                    <h2 className="text-3xl font-bold mb-2">{article.title}</h2>
+                    <p className="text-lg opacity-90">
+                      {article.content.substring(0, 100)}...
+                    </p>
                   </div>
                 </div>
               </Link>

@@ -6,6 +6,7 @@ import type { WeatherType } from "../types/weather-types";
 import { Button } from "./ui/button";
 
 type WeatherSnapshot = {
+  city: string;
   temp: number;
   summary: string;
 };
@@ -16,6 +17,7 @@ const conditionIcon = (summary: string) => {
   if (s.includes("rain")) return "🌧️";
   if (s.includes("cloud")) return "☁️";
   if (s.includes("snow")) return "❄️";
+  if (s.includes("full moon")) return "🌕";
   if (s.includes("sun") || s.includes("clear")) return "☀️";
 
   return "🌤️";
@@ -23,6 +25,7 @@ const conditionIcon = (summary: string) => {
 
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
+  const city = "Linköping";
 
   useEffect(() => {
     const controller = new AbortController();
@@ -37,7 +40,7 @@ export default function WeatherWidget() {
         );
 
         const response = await fetch(
-          `${apiBaseUrl}/forecast/location/Stockholm`,
+          `${apiBaseUrl}/forecast/location/${city}`,
           { signal: controller.signal },
         );
 
@@ -50,6 +53,7 @@ export default function WeatherWidget() {
         setWeather({
           temp: Math.round(now.temp),
           summary: now.summary,
+          city: city,
         });
       } catch {
         // Intentionally silent — navbar widgets should never shout
@@ -58,7 +62,7 @@ export default function WeatherWidget() {
 
     fetchWeather();
     return () => controller.abort();
-  }, []);
+  }, [city]);
 
   if (!weather) return null;
 
@@ -67,7 +71,7 @@ export default function WeatherWidget() {
       <Link
         href="/weather"
         className="
-        flex items-center gap-2
+        flex justify-items-center  gap-2
         rounded-full
         backdrop-blur-sm
         px-3 py-1.5
@@ -76,7 +80,9 @@ export default function WeatherWidget() {
       "
         aria-label="View detailed weather forecast"
       >
-        <span>{conditionIcon(weather.summary)}</span>
+        <span>
+          {city}: {conditionIcon(weather.summary)}
+        </span>
         <span className="font-medium">{weather.temp}°</span>
       </Link>
     </Button>
