@@ -9,9 +9,7 @@ export default async function ArticleDetail({
   const { id } = await params;
 
   const article = articles.find(a => a.id === id);
-  if (!article) {
-    notFound();
-  }
+  if (!article) return <p>Not found</p>;
 
   // Increment views and get updated count
   const updatedViews = await incrementView(id);

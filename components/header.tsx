@@ -30,8 +30,17 @@ export default function Header() {
           ))}
         </div>
 
-        {/* Right side: Theme toggle */}
-        <ModeToggle />
+        {/* Right side: Subscribe + Theme toggle */}
+        <div className="flex items-center gap-4">
+          <Link
+            href="/subscribe"
+            className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+          >
+            Subscribe
+          </Link>
+
+          <ModeToggle />
+        </div>
       </nav>
     </header>
   );
