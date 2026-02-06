@@ -11,7 +11,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
 
   const categoryArticles = articles.filter(
-    (a) => a.category?.toLowerCase() === slug.toLowerCase()
+    (a) => a.category?.toLowerCase() === slug.toLowerCase(),
   );
 
   const categoryLabels: Record<string, string> = {
@@ -54,11 +54,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                   height={300} // Motsvarar h-36/aspect ratio
                   className="w-full h-48 object-cover" // Justerad till full bredd för bättre grid-estetik
                   // Laddar de första två bilderna direkt för bättre LCP (Largest Contentful Paint)
-                  priority={index < 2} 
+                  priority={index < 2}
                 />
               </div>
 
-              <div className="p-4 flex flex-grow flex-col">
+              <div className="p-4 flex grow flex-col">
                 <h2 className="text-xl font-bold mb-2 line-clamp-2">
                   {article.title}
                 </h2>
