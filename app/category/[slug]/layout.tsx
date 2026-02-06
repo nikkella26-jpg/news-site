@@ -26,15 +26,15 @@ export default async function CategoryLayout({
         <h1 className="text-2xl font-bold">Category: {title}</h1>
       </header>
 
-      <main className="grow container mx-auto p-6">
-        {children}
-      </main>
+      <main className="grow container mx-auto p-6">{children}</main>
 
-      <footer className="bg-gray-200 text-center p-4 
+      <footer
+        className="bg-gray-200 text-center p-4 
                    text-slate-900 
-                   dark:bg-slate-900 dark:text-slate-100">
-  <p>© 2026 The News Site - The Crucible Coders</p>
-</footer>
+                   dark:bg-slate-900 dark:text-slate-100"
+      >
+        <p>© 2026 The News Site - The Crucible Coders</p>
+      </footer>
     </div>
   );
 }

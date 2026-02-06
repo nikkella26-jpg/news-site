@@ -45,7 +45,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                          bg-white dark:bg-slate-900
                          border-slate-300 dark:border-slate-700"
             >
-              {/* Uppdaterad till Next.js Image för automatisk optimering */}
               <div className="relative">
                 <Image
                   src={article.image}
