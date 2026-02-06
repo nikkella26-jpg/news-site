@@ -39,8 +39,6 @@ export default function Header() {
           >
             Subscribe
           </Link>
-
-          <ModeToggle />
         </div>
         {/* Right side: Theme toggle */}
         <WeatherWidget />
