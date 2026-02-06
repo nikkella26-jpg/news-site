@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ModeToggle } from "@/components/mode-toggle";
+import WeatherWidget from "./weatherWidget";
 
 const categories = ["World", "Politics", "Tech", "Sports"];
 
@@ -12,7 +13,7 @@ export default function Header() {
         {/* Left side: Logo + categories */}
         <div className="flex items-center gap-6">
           <Link href="/" className="font-bold text-xl">
-            News
+            Home
           </Link>
 
           {/* Newsfeed Button */}
@@ -41,6 +42,10 @@ export default function Header() {
 
           <ModeToggle />
         </div>
+        {/* Right side: Theme toggle */}
+        <WeatherWidget />
+
+        <ModeToggle />
       </nav>
     </header>
   );

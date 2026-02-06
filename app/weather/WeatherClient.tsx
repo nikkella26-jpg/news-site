@@ -65,11 +65,6 @@ export default function WeatherClient({ city }: Props) {
       }
     }
 
-    const now = weather
-      ? (weather.timeseries.find((t) => new Date(t.validTime) >= new Date()) ??
-        weather.timeseries[0])
-      : null;
-
     fetchWeather();
 
     return () => controller.abort();
