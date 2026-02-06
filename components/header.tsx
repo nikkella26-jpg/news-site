@@ -9,7 +9,7 @@ const categories = ["World", "Politics", "Tech", "Sports"];
 export default function Header() {
   return (
     <header className="border-b">
-      <nav className="container mx-auto flex items-center justify-between py-4">
+      <nav className="container mx-auto flex items-center justify-between py-4 px-4">
         {/* Left side: Logo + categories */}
         <div className="flex items-center gap-6">
           <Link href="/" className="font-bold text-xl">
@@ -30,20 +30,21 @@ export default function Header() {
             </Link>
           ))}
         </div>
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <WeatherWidget />
+        </div>
 
         {/* Right side: Subscribe + Theme toggle */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-8 pl-2">
           <Link
             href="/subscribe"
             className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
           >
             Subscribe
           </Link>
+          <ModeToggle />
         </div>
         {/* Right side: Theme toggle */}
-        <WeatherWidget />
-
-        <ModeToggle />
       </nav>
     </header>
   );
