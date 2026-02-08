@@ -36,7 +36,7 @@ export default function Header() {
           <WeatherWidget />
         </div>
 
-        {/* Right side: Login + Subscribe + toggle */}
+        {/* Right side: Login + Subscribe + toggle mode */}
         <div className="flex items-center gap-8 pl-2">
           <Link
             href="/login"
