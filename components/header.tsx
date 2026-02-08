@@ -37,10 +37,10 @@ export default function Header() {
         </div>
 
         {/* Right side: Login + Subscribe + Theme toggle */}
-        <div className="flex items-center gap-8 pl-2">
+        <div className="flex items-right gap-8 pl-2">
           <Link
             href="/login"
-            className="px-4 py-2 rounded-md border bg-blue-600 text-white font-semibold hover:bg-blue-7000 transition"
+            className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
           >
             Login
           </Link>
