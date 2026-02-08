@@ -30,21 +30,30 @@ export default function Header() {
             </Link>
           ))}
         </div>
+
+        {/* Center: Weather */}
         <div className="absolute left-1/2 -translate-x-1/2">
           <WeatherWidget />
         </div>
 
-        {/* Right side: Subscribe + Theme toggle */}
+        {/* Right side: Login + Subscribe + Theme toggle */}
         <div className="flex items-center gap-8 pl-2">
+          <Link
+            href="/login"
+            className="px-4 py-2 rounded-md border bg-blue-600 text-white font-semibold hover:bg-blue-7000 transition"
+          >
+            Login
+          </Link>
+
           <Link
             href="/subscribe"
             className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
           >
             Subscribe
           </Link>
+
           <ModeToggle />
         </div>
-        {/* Right side: Theme toggle */}
       </nav>
     </header>
   );
