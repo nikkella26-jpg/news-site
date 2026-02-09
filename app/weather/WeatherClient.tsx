@@ -161,8 +161,11 @@ function HourlyWeatherCard({
   condition,
   humidity,
 }: HourlyCardProps) {
-  const hour = format(new Date(time || ""), "HH:00");
-  const timeDate = new Date(time || "");
+  if (!time) {
+    time = new Date().toString();
+  }
+  const hour = format(new Date(time), "HH:00");
+  const timeDate = new Date(time);
   const isNow =
     new Date().getHours() === timeDate.getHours() &&
     new Date().getDate() === timeDate.getDate();
