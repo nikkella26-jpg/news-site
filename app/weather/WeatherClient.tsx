@@ -1,39 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { WeatherType } from "../../types/weather-types";
-import type { AdaptedTimeSlotWeather } from "./adaptWeatherToTimeSlots";
-import { format } from "date-fns";
-import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
 
-import {
-  Wind,
-  Droplets,
-  Sun,
-  Cloud,
-  CloudRain,
-  CloudSnow,
-  CloudLightning,
-  CloudSun,
-} from "lucide-react";
+import { WeeklyForecastCard } from "@/components/WeeklyForecastCard";
+
+import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
+import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
 
 type WeatherClientProps = {
   city: string;
 };
 
-type HourlyCardProps = {
-  time: string | undefined;
-  airTemp: number;
-  windSpeed: number;
-  condition: string;
-  humidity: number;
-};
-
 export default function WeatherClient({ city }: WeatherClientProps) {
-  const [timeSlots, setTimeSlots] = useState<AdaptedTimeSlotWeather[]>([]);
-
+  const [timeSlots, setTimeSlots] = useState<
+    ReturnType<typeof adaptWeatherToTimeSlots>
+  >([]);
+  const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>(
+    [],
+  );
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -45,7 +31,7 @@ export default function WeatherClient({ city }: WeatherClientProps) {
       try {
         if (!process.env.NEXT_PUBLIC_WEATHER_API_URL) {
           throw new Error(
-            "Please set NEXT_PUBLIC_WEATHER_API_URL in your .env",
+            "Please set NEXT_PUBLIC_WEATHER_API_URL in your .env file",
           );
         }
 
@@ -66,13 +52,15 @@ export default function WeatherClient({ city }: WeatherClientProps) {
           throw new Error("Failed to fetch weather data");
         }
 
-        const data: WeatherType = await response.json();
+        const data = await response.json();
 
         if (!Array.isArray(data.timeseries)) {
           throw new Error("Unexpected weather data format");
         }
 
-        setTimeSlots(adaptWeatherToTimeSlots(data.timeseries as never));
+        // 🔑 ADAPT DATA HERE — single source of truth
+        setTimeSlots(adaptWeatherToTimeSlots(data.timeseries));
+        setWeekly(adaptWeatherToWeek(data.timeseries));
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
           setError(err.message);
@@ -88,7 +76,7 @@ export default function WeatherClient({ city }: WeatherClientProps) {
     return () => controller.abort();
   }, [city]);
 
-  /* ───────────────────────── UI ───────────────────────── */
+  /* ───────────────────────── UI STATES ───────────────────────── */
 
   if (loading) {
     return (
@@ -104,127 +92,47 @@ export default function WeatherClient({ city }: WeatherClientProps) {
 
   if (timeSlots.length === 0) return null;
 
+  /* ───────────────────────── RENDER ───────────────────────── */
+
   return (
     <div className="max-w-6xl mx-auto px-4 pb-20">
+      {/* Header */}
       <section className="pt-10 pb-6">
         <h1 className="text-2xl font-semibold text-slate-800">
           Weather in {city}
         </h1>
-        <p className="mt-1 text-slate-600">
-          Hourly forecast for the next 24 hours
-        </p>
+        <p className="mt-1 text-slate-600">Today’s forecast</p>
       </section>
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3">
-        {timeSlots
-          .filter((slot) => slot.time !== undefined)
-          .map((slot) => (
-            <HourlyWeatherCard
-              key={slot.time}
-              time={slot.time}
-              airTemp={slot.airTemp ?? 0}
-              windSpeed={slot.windSpeed ?? 0}
-              condition={slot.condition}
-              humidity={slot.humidity ?? 0}
+
+      {/* Today – 4 time slots */}
+      <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {timeSlots.map((slot) => (
+          <div
+            key={slot.time}
+            className="rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-100"
+          >
+            {/* Add weather slot content here */}
+          </div>
+        ))}
+      </section>
+
+      {/* Weekly forecast */}
+      <section className="mt-8">
+        <h2 className="text-xl font-semibold text-slate-800 mb-4">
+          7-Day Forecast
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-7 gap-4">
+          {weekly.map((day, index) => (
+            <WeeklyForecastCard
+              key={index}
+              dayLabel={day.dayLabel}
+              minTemp={day.minTemp}
+              maxTemp={day.maxTemp}
+              condition={day.condition}
             />
           ))}
-      </div>
-    </div>
-  );
-}
-
-function WeatherIcon({
-  condition,
-  className,
-}: {
-  condition: string;
-  className?: string;
-}) {
-  const s = condition.toLowerCase();
-  if (s.includes("rain")) return <CloudRain className={className} />;
-  if (s.includes("snow")) return <CloudSnow className={className} />;
-  if (s.includes("thunder") || s.includes("lightning"))
-    return <CloudLightning className={className} />;
-  if (s.includes("cloud")) {
-    if (s.includes("partly") || s.includes("broken"))
-      return <CloudSun className={className} />;
-    return <Cloud className={className} />;
-  }
-  if (s.includes("sun") || s.includes("clear"))
-    return <Sun className={className} />;
-  return <CloudSun className={className} />;
-}
-
-function HourlyWeatherCard({
-  time,
-  airTemp,
-  windSpeed,
-  condition,
-  humidity,
-}: HourlyCardProps) {
-  if (!time) {
-    time = new Date().toString();
-  }
-  const hour = format(new Date(time), "HH:00");
-  const timeDate = new Date(time);
-  const isNow =
-    new Date().getHours() === timeDate.getHours() &&
-    new Date().getDate() === timeDate.getDate();
-
-  return (
-    <div
-      className={`
-      relative overflow-hidden
-      flex flex-col items-center p-4 rounded-2xl
-      transition-all duration-300 hover:scale-105
-      ${
-        isNow
-          ? "bg-linear-to-br from-cyan-500 to-blue-600 text-white shadow-lg shadow-blue-200"
-          : "bg-white/80 backdrop-blur-md border border-slate-100 text-slate-700 shadow-sm hover:shadow-md"
-      }
-    `}
-    >
-      <span
-        className={`text-xs font-medium uppercase tracking-wider mb-3 ${isNow ? "text-blue-50" : "text-slate-400"}`}
-      >
-        {isNow ? "Now" : hour}
-      </span>
-
-      <div className="mb-4">
-        <WeatherIcon
-          condition={condition}
-          className={`w-10 h-10 ${isNow ? "text-white" : "text-cyan-500"}`}
-        />
-      </div>
-
-      <div className="flex flex-col items-center mb-4">
-        <span className="text-2xl font-bold">{Math.round(airTemp)}°</span>
-        <span
-          className={`text-[10px] text-center line-clamp-1 h-3 ${isNow ? "text-blue-100" : "text-slate-400"}`}
-        >
-          {condition}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3 w-full pt-3 border-t border-slate-100/20">
-        <div className="flex flex-col items-center gap-1">
-          <Wind
-            className={`w-3 h-3 ${isNow ? "text-blue-200" : "text-slate-400"}`}
-          />
-          <span className="text-[10px] font-medium">
-            {Math.round(windSpeed)}
-            <span className="opacity-70 ml-0.5">m/s</span>
-          </span>
         </div>
-        <div className="flex flex-col items-center gap-1">
-          <Droplets
-            className={`w-3 h-3 ${isNow ? "text-blue-200" : "text-slate-400"}`}
-          />
-          <span className="text-[10px] font-medium">
-            {Math.round(humidity)}
-            <span className="opacity-70 ml-0.5">%</span>
-          </span>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

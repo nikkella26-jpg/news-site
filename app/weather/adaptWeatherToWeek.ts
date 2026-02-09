@@ -1,5 +1,3 @@
-// lib/weather/adaptWeatherToWeek.ts
-
 export type AdaptedDailyWeather = {
   dayLabel: string;
   minTemp: number;
