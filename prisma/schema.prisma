@@ -13,32 +13,24 @@ datasource db {
   provider = "postgresql"
 }
 
-enum Role {
-  user
-  editor
-  admin
-}
-
-
-
- model User {
-  id            String    @id @default(uuid())
+model User {
+  id            String   @id @default(uuid())
   name          String
-  email         String    @unique
+  email         String   @unique
   password      String?
-  role          Role      @default(user)
-  emailVerified Boolean?  @default(false)
+  role          String
+  emailVerified Boolean? @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  sessions      Session[]
-  accounts      Account[]
+  sessions Session[]
+  accounts Account[]
   // Existing fields from previous schema kept for safety if needed, 
   // but logically "banned" etc. were not in the new prompt. 
   // keeping them optional to not break valid data if present.
 
-  banned           Boolean? @default(false)
+  banned           Boolean?       @default(false)
   banReason        String?
   banExpires       DateTime?
   stripeCustomerId String?
@@ -47,11 +39,6 @@ enum Role {
 
   @@map("user")
 }
-
-  
-  
-  
-  
 
 model Session {
   id        String   @id @default(uuid())
@@ -102,9 +89,6 @@ model Verification {
   @@map("verification")
 }
 
-
-
-
 model Category {
   id       String    @id @default(uuid())
   name     String    @unique
@@ -124,14 +108,14 @@ model SubscriptionType {
 }
 
 model Subscription {
-  id                 String           @id @default(uuid())
-  status             String
-  createdAt          DateTime         @default(now())
-  expiresAt          DateTime?
-  
-  userId             String
-  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String    @id @default(uuid())
+  status    String
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   subscriptionTypeId String
   subscriptionType   SubscriptionType @relation(fields: [subscriptionTypeId], references: [id])
 
@@ -153,22 +137,22 @@ model Subscription {
 }
 
 model Article {
-  id              String   @id @default(uuid())
+  id              String  @id @default(uuid())
   title           String
-  slug            String   @unique
+  slug            String  @unique
   content         String
   image           String?
-  published       Boolean  @default(false)
-  isEditorsChoice Boolean  @default(false)
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  published       Boolean @default(false)
+  isEditorsChoice Boolean @default(false)
 
-  authorId        String
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  categoryId      String?
-  category        Category? @relation(fields: [categoryId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
 
   @@map("article")
 }
