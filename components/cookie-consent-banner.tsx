@@ -17,13 +17,11 @@ export const CookieConsentBanner = () => {
       disableButtonStyles={true} // Inaktivera inline-styles för att använda Shadcn/Tailwind
       buttonWrapperClasses="flex gap-2"
     >
-      We cookies to enhance the news site experince. 
-      Read all about it in{" "}
+      We cookies to enhance the news site experince. Read all about it in{" "}
       <a href="/privacy-policy" className="underline hover:text-primary">
         Integrity policy
-      </a>.
-      
-      {/* Vi mappar om knapparna till dina Shadcn UI knappar */}
+      </a>
+      .{/* Vi mappar om knapparna till dina Shadcn UI knappar */}
       <Button variant="default" size="sm" className="ml-4">
         Accept
       </Button>
