@@ -27,12 +27,16 @@ export async function sendMail(
   subject: string,
   content: string,
 ) {
-  // Send the email
+  // Send the email. Include a `from` so mail clients show a valid sender and
+  // the email transport doesn't try to rewrite or drop parts of the message.
+  const fromAddress =
+    process.env.EMAIL_FROM ?? process.env.EMAIL_USER ?? "no-reply@example.com";
   const response = await transporter.sendMail({
-    to: toEmail, // Recipient's email
-    subject: subject, // Email subject
-    text: content, // Plain text version
-    html: content, // HTML version (can be formatted)
+    from: fromAddress,
+    to: toEmail,
+    subject: subject,
+    text: content,
+    html: content,
   });
 
   // Check if email was accepted
