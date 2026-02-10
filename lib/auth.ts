@@ -8,11 +8,26 @@ import Stripe from "stripe";
 // If your Prisma file is located elsewhere, you can change the path
 import prisma from "./prisma";
 import { nextCookies } from "better-auth/next-js";
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
+
+if (!STRIPE_SECRET_KEY) {
+  throw new Error("STRIPE_SECRET_KEY is missing");
+}
+
+if (!STRIPE_WEBHOOK_SECRET) {
+  throw new Error("STRIPE_WEBHOOK_SECRET is missing");
+}
+
+const stripeClient = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
 });
+
+const APP_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  baseURL: APP_URL,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -31,7 +46,7 @@ export const auth = betterAuth({
         throw new Error("Invalid reset password URL");
       }
 
-      const resetUrl = `${process.env.BETTER_AUTH_URL || "http://localhost:3000"}/reset-password?token=${token}&callbackURL=${encodeURIComponent("/login")}`;
+      const resetUrl = `${APP_URL}/reset-password?token=${token}&callbackURL=${encodeURIComponent("/login")}`;
       const html = `Click the link to reset your password: <a href="${resetUrl}">${resetUrl}</a>`;
       await sendMail(user.email, "Reset your password", html);
     },

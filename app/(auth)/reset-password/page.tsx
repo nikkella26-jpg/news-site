@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter} from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 export default function ResetPasswordPage() {
+    const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const callbackURL = searchParams.get("callbackURL");
@@ -19,11 +20,11 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
 
   // Validate token on mount
-  useEffect(() => {
+/* useEffect(() => {
     if (!token) {
       toast.error("Invalid reset link - missing token");
     }
-  }, [token]);
+  }, [token]); */
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -68,12 +69,14 @@ export default function ResetPasswordPage() {
 
       // Redirect to login or callback URL after a short delay
       setTimeout(() => {
-        if (callbackURL) {
-          window.location.href = callbackURL;
-        } else {
-          window.location.href = "/login";
-        }
-      }, 1500);
+ const safeCallback =
+  callbackURL &&
+  callbackURL.startsWith("/") &&
+  !callbackURL.startsWith("//") &&
+  !callbackURL.includes("://");
+
+router.push(safeCallback ? callbackURL : "/login");
+}, 1500);
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : "Failed to reset password";
