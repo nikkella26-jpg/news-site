@@ -1,5 +1,5 @@
 import prisma from '../lib/prisma.js';
-import { Role } from '../lib/generated/prisma/index.js';
+// import { Role } from '@prisma/client';
 
 async function main() {
   console.log('Seeding database...');
@@ -45,10 +45,8 @@ async function main() {
 
   await Promise.all(
     subTypes.map((st) =>
-      prisma.subscriptionType.upsert({
-        where: { name: st.name },
-        update: {},
-        create: st,
+      prisma.subscriptionType.create({
+        data: st,
       })
     )
   );
@@ -57,36 +55,36 @@ async function main() {
   // 3. Users
   const password = 'password123'; // In a real app, hash this!
 
-  const admin = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'admin@example.com' },
     update: {},
     create: {
       name: 'Admin User',
       email: 'admin@example.com',
       password,
-      role: Role.ADMIN,
+      role: 'admin', // Replaced Role enum with string literal
     },
   });
 
-  const editor = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'editor@example.com' },
     update: {},
     create: {
       name: 'Editor User',
       email: 'editor@example.com',
       password,
-      role: Role.EDITOR,
+      role: 'editor', // Replaced Role enum with string literal
     },
   });
 
-  const user = await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: 'user@example.com' },
     update: {},
     create: {
       name: 'Normal User',
       email: 'user@example.com',
       password,
-      role: Role.USER,
+      role: 'user', // Replaced Role enum with string literal
     },
   });
   console.log('Users seeded.');
@@ -94,28 +92,30 @@ async function main() {
   // 4. Articles
   const swedenCategory = await prisma.category.findUnique({ where: { name: 'Sweden' } });
   const economyCategory = await prisma.category.findUnique({ where: { name: 'Economy' } });
+  const editorUser = await prisma.user.findUnique({ where: { email: 'editor@example.com' } });
 
-  if (swedenCategory) {
+  if (swedenCategory && editorUser) {
     await prisma.article.create({
       data: {
-        headline: 'Big News in Sweden',
-        summary: 'Something important happened.',
+        title: 'Big News in Sweden',
+        slug: 'big-news-in-sweden',
         content: 'Detailed content about the event in Sweden...',
         categoryId: swedenCategory.id,
-        editorChoice: true,
+        authorId: editorUser.id,
+        isEditorsChoice: true,
         image: '/placeholder.jpg'
       },
     });
   }
 
-  if (techCategory) {
+  if (economyCategory && editorUser) {
     await prisma.article.create({
       data: {
-        headline: 'Market hits record high',
-        summary: 'Economy is booming.',
+        title: 'Market hits record high',
+        slug: 'market-hits-record-high',
         content: 'Detailed analysis of the stock market...',
-        categoryId: techCategory.id,
-        views: 100,
+        categoryId: economyCategory.id,
+        authorId: editorUser.id,
         image: '/placeholder.jpg'
       },
     });

@@ -1,4 +1,4 @@
-export function summarizeHourlyGroup(entries: any[]) {
+export function summarizeHourlyGroup(entries: { summary: string, temp: number, windSpeed: number, humidity: number }[]) {
     const avg = (vals: number[]) =>
         Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
 

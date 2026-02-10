@@ -1,20 +1,25 @@
 "use client";
 
+import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
+import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
+import SixHourlyForecastGrid from "../../components/sixHourlyForecastGrid";
+
 import { useEffect, useState } from "react";
 
 import { WeeklyForecastCard } from "@/components/WeeklyForecastCard";
 
-import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
-import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
+type TimeSlot = {
+  time: string;
+  temp: number;
+  condition?: string;
+};
 
 type WeatherClientProps = {
   city: string;
 };
 
 export default function WeatherClient({ city }: WeatherClientProps) {
-  const [timeSlots, setTimeSlots] = useState<
-    ReturnType<typeof adaptWeatherToTimeSlots>
-  >([]);
+  const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>(
     [],
   );
@@ -59,7 +64,9 @@ export default function WeatherClient({ city }: WeatherClientProps) {
         }
 
         // 🔑 ADAPT DATA HERE — single source of truth
-        setTimeSlots(adaptWeatherToTimeSlots(data.timeseries));
+        setTimeSlots(
+          adaptWeatherToTimeSlots(data.timeseries) as unknown as TimeSlot[],
+        );
         setWeekly(adaptWeatherToWeek(data.timeseries));
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
@@ -105,15 +112,8 @@ export default function WeatherClient({ city }: WeatherClientProps) {
       </section>
 
       {/* Today – 4 time slots */}
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {timeSlots.map((slot) => (
-          <div
-            key={slot.time}
-            className="rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-100"
-          >
-            {/* Add weather slot content here */}
-          </div>
-        ))}
+      <section>
+        <SixHourlyForecastGrid forecasts={timeSlots} />
       </section>
 
       {/* Weekly forecast */}
