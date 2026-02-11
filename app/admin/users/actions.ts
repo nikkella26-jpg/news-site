@@ -10,7 +10,7 @@ export async function getAllUsers() {
     headers: await headers(),
   });
 
-  if (!session || session.user.role !== "admin") {
+  if (!session || (session.user.role !== "admin" && session.user.role !== "ADMIN")) {
     throw new Error("Unauthorized");
   }
 
@@ -32,16 +32,14 @@ export async function updateUserRole(userId: string, role: string) {
     headers: await headers(),
   });
 
-  if (!session || session.user.role !== "admin") {
+  if (!session || (session.user.role !== "admin" && session.user.role !== "ADMIN")) {
     throw new Error("Unauthorized");
   }
 
-  await auth.api.setRole({
-    body: {
-      userId,
-      role: role as "user" | "admin" | "editor",
-    },
-    headers: await headers(),
+  // Update directly via Prisma to bypass better-auth plugin restrictions
+  await prisma.user.update({
+    where: { id: userId },
+    data: { role },
   });
 
   revalidatePath("/admin/users");

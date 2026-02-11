@@ -19,7 +19,7 @@ export default async function AdminPage() {
   });
 
   // Kontrollera att användaren är inloggad och är ADMIN
-  if (!session || session.user.role !== "admin") {
+  if (!session || session.user.role?.toLowerCase() !== "admin") {
     redirect("/");
   }
 

@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { admin as adminPlugin } from "better-auth/plugins";
-import { ac, admin, editor, user } from "./permissions";
+import { ac, roles } from "./permissions";
 import { sendMail } from "./mail";
 import { stripe } from "@better-auth/stripe";
 import Stripe from "stripe";
@@ -63,11 +63,7 @@ export const auth = betterAuth({
   plugins: [
     adminPlugin({
       ac,
-      roles: {
-        admin,
-        user,
-        editor,
-      },
+      roles,
     }),
     stripe({
       stripeClient,

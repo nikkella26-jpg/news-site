@@ -22,17 +22,15 @@ import { ArrowLeft } from "lucide-react";
 export default async function EditArticlePage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
+  const { id } = await params;
   const session = await auth.api.getSession({
     headers: await headers(),
   });
 
-  if (
-    !session ||
-    (session.user.role !== "admin" && session.user.role !== "editor")
-  ) {
+  const role = session?.user.role?.toLowerCase();
+  if (!session || (role !== "admin" && role !== "editor")) {
     redirect("/");
   }
 
