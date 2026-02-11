@@ -108,7 +108,7 @@ export default function WeatherClient({ city }: WeatherClientProps) {
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {timeSlots.map((slot) => (
           <div
-            key={slot.time}
+            key={slot.slot}
             className="rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-100"
           >
             {/* Add weather slot content here */}

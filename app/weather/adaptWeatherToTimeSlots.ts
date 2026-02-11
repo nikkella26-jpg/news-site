@@ -41,15 +41,18 @@ export function adaptWeatherToTimeSlots(
       const avgTemp =
         entries.reduce((sum, e) => sum + e.temp, 0) / entries.length;
 
-      const conditionCount: Record<string, number> = {};
+      const conditionCount = new Map<string, number>();
 
       entries.forEach((e) => {
-        conditionCount[e.summary] = (conditionCount[e.summary] || 0) + 1;
+        const current = conditionCount.get(e.summary) ?? 0;
+        conditionCount.set(e.summary, current + 1);
       });
 
-      const condition = Object.entries(conditionCount).sort(
+      const sortedConditions = [...conditionCount.entries()].sort(
         (a, b) => b[1] - a[1],
-      )[0][0];
+      );
+
+      const condition = sortedConditions[0]?.[0] ?? "Unknown";
 
       return {
         slot,

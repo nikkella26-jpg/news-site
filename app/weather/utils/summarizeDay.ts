@@ -10,13 +10,14 @@ export function summarizeDay(entries: { temp: number; summary: string }[]) {
   const minTemp = Math.min(...entries.map((e) => e.temp));
   const maxTemp = Math.max(...entries.map((e) => e.temp));
 
-  const conditionCount: Record<string, number> = {};
+  const conditionCount = new Map<string, number>();
 
   entries.forEach((e) => {
-    conditionCount[e.summary] = (conditionCount[e.summary] || 0) + 1;
+    const current = conditionCount.get(e.summary) ?? 0;
+    conditionCount.set(e.summary, current + 1);
   });
 
-  const condition = Object.entries(conditionCount).sort(
+  const condition = [...conditionCount.entries()].sort(
     (a, b) => b[1] - a[1],
   )[0][0];
 
