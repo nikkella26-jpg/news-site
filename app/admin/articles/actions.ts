@@ -9,7 +9,9 @@ async function checkAuth() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  if (!session || (session.user.role !== "admin" && session.user.role !== "editor")) {
+  
+  const role = session?.user.role?.toLowerCase();
+  if (!session || (role !== "admin" && role !== "editor")) {
     throw new Error("Unauthorized");
   }
   return session;
@@ -44,7 +46,7 @@ export async function createArticle(data: {
   image?: string;
 }) {
   const session = await checkAuth();
-  
+
   const slug = data.title
     .toLowerCase()
     .replace(/[^\w\s-]/g, "")
@@ -68,14 +70,17 @@ export async function createArticle(data: {
   return article;
 }
 
-export async function updateArticle(id: string, data: {
-  title?: string;
-  content?: string;
-  categoryId?: string;
-  published?: boolean;
-  isEditorsChoice?: boolean;
-  image?: string;
-}) {
+export async function updateArticle(
+  id: string,
+  data: {
+    title?: string;
+    content?: string;
+    categoryId?: string;
+    published?: boolean;
+    isEditorsChoice?: boolean;
+    image?: string;
+  },
+) {
   await checkAuth();
 
   const article = await prisma.article.update({
@@ -104,8 +109,21 @@ export async function toggleEditorsChoice(id: string, currentStatus: boolean) {
 
 export async function createCategory(name: string) {
   await checkAuth();
-  const slug = name.toLowerCase().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
   return await prisma.category.create({
-    data: { name, slug: `${slug}-${Date.now()}` },
+    data: { name },
   });
+}
+
+import { generateArticleContent } from "@/lib/ai";
+
+export async function generateAIContent(title: string) {
+  await checkAuth();
+
+  try {
+    const text = await generateArticleContent(title);
+    return text;
+  } catch (error) {
+    console.error("AI Generation Error:", error);
+    throw new Error("Misslyckades att generera innehåll med AI.");
+  }
 }

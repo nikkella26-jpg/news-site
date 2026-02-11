@@ -12,14 +12,16 @@ import {
 
 export default async function AdminUsersPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || session.user.role !== "admin") redirect("/");
+  
+  const role = session?.user.role?.toLowerCase();
+  if (!session || role !== "admin") redirect("/");
 
   const users = await getAllUsers();
 
   async function changeRole(formData: FormData) {
     "use server";
     const userId = formData.get("userId") as string;
-    const role = formData.get("role") as "user" | "editor" | "admin";
+    const role = formData.get("role") as "USER" | "EDITOR" | "ADMIN";
     await updateUserRole(userId, role);
   }
 
@@ -49,9 +51,9 @@ export default async function AdminUsersPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="user">USER</SelectItem>
-                      <SelectItem value="editor">EDITOR</SelectItem>
-                      <SelectItem value="admin">ADMIN</SelectItem>
+                      <SelectItem value="USER">USER</SelectItem>
+                      <SelectItem value="EDITOR">EDITOR</SelectItem>
+                      <SelectItem value="ADMIN">ADMIN</SelectItem>
                     </SelectContent>
                   </Select>
 

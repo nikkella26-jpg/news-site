@@ -55,7 +55,7 @@ async function main() {
   console.log('SubscriptionTypes seeded.');
 
   // 3. Users
-  const password = 'password123'; // In a real app, hash this!
+  const password = 'password123'; // Note: Better Auth expects hashed passwords if you want to login
 
   const admin = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
@@ -98,25 +98,29 @@ async function main() {
   if (swedenCategory) {
     await prisma.article.create({
       data: {
-        headline: 'Big News in Sweden',
-        summary: 'Something important happened.',
+        title: 'Big News in Sweden',
+        slug: 'big-news-in-sweden',
         content: 'Detailed content about the event in Sweden...',
         categoryId: swedenCategory.id,
-        editorChoice: true,
-        image: '/placeholder.jpg'
+        isEditorsChoice: true,
+        image: '/placeholder.jpg',
+        authorId: admin.id,
+        published: true,
       },
     });
   }
 
-  if (techCategory) {
+  if (economyCategory) {
     await prisma.article.create({
       data: {
-        headline: 'Market hits record high',
-        summary: 'Economy is booming.',
+        title: 'Market hits record high',
+        slug: 'market-hits-record-high',
         content: 'Detailed analysis of the stock market...',
-        categoryId: techCategory.id,
-        views: 100,
-        image: '/placeholder.jpg'
+        categoryId: economyCategory.id,
+        isEditorsChoice: false,
+        image: '/placeholder.jpg',
+        authorId: editor.id,
+        published: true,
       },
     });
   }

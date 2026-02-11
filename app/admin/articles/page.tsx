@@ -30,10 +30,8 @@ export default async function ArticlesPage() {
     headers: await headers(),
   });
 
-  if (
-    !session ||
-    (session.user.role !== "admin" && session.user.role !== "editor")
-  ) {
+  const role = session?.user.role?.toLowerCase();
+  if (!session || (role !== "admin" && role !== "editor")) {
     redirect("/");
   }
 
