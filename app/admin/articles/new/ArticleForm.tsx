@@ -15,17 +15,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Sparkles as SparklesIcon, Loader2 as LoaderIcon } from "lucide-react";
 
-export default function ArticleForm({ categories }: { categories: any[] }) {
+export default function ArticleForm({
+  categories,
+}: {
+  categories: { id: string; name: string }[];
+}) {
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,7 +50,9 @@ export default function ArticleForm({ categories }: { categories: any[] }) {
       toast.success("Content generated successfully!");
     } catch (error) {
       console.error("Client error generating AI content:", error);
-      toast.error("Failed to generate content. Check your API key and server logs.");
+      toast.error(
+        "Failed to generate content. Check your API key and server logs.",
+      );
     } finally {
       setIsGenerating(false);
     }
