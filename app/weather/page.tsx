@@ -5,7 +5,9 @@ export default async function Page({
 }: {
   searchParams: Promise<{ city?: string }>;
 }) {
-  const { city = "Linköping" } = await searchParams;
+  const params = await searchParams;
+
+  const city = typeof params.city === "string" ? params.city : "Linköping";
 
   return (
     <div className="flex flex-col gap-8 w-full">
