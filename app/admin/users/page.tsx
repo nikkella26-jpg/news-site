@@ -12,7 +12,9 @@ import {
 
 export default async function AdminUsersPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session || (session.user.role !== "admin" && session.user.role !== "ADMIN")) redirect("/");
+  
+  const role = session?.user.role?.toLowerCase();
+  if (!session || role !== "admin") redirect("/");
 
   const users = await getAllUsers();
 
