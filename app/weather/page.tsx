@@ -1,6 +1,38 @@
+import { notFound } from "next/navigation";
 import WeatherClient from "./WeatherClient";
 import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
 import { generateWeeklyWeatherSummary } from "@/lib/ai";
+
+type WeatherErrorProps = {
+  city: string;
+  message: string;
+};
+
+function WeatherError({ city, message }: WeatherErrorProps) {
+  return (
+    <div className="flex flex-col gap-8 w-full">
+      <div
+        className="
+        fixed inset-0 -z-20
+        bg-linear-to-b
+        from-slate-200
+        via-cyan-100
+        to-stone-100
+        "
+      />
+      <div className="max-w-6xl mx-auto px-4 py-20">
+        <div className="text-center">
+          <h1 className="text-2xl font-semibold text-slate-800 mb-4">
+            Weather in {city}
+          </h1>
+          <div className="text-red-600 bg-red-50 border border-red-200 rounded-lg p-4">
+            {message}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default async function Page({
   searchParams,
@@ -20,24 +52,66 @@ export default async function Page({
     throw new Error("Weather API URL missing");
   }
 
-  const response = await fetch(
-    `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
-    { cache: "no-store" },
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to fetch weather data");
+  let response;
+  try {
+    response = await fetch(
+      `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
+      { cache: "no-store" },
+    );
+  } catch {
+    return (
+      <WeatherError
+        city={city}
+        message="Unable to connect to weather service. Please try again later."
+      />
+    );
   }
 
-  const data = await response.json();
+  // Handle 404 - city not found
+  if (response.status === 404) {
+    notFound();
+  }
+
+  // Handle other HTTP errors
+  if (!response.ok) {
+    return (
+      <WeatherError
+        city={city}
+        message={`Unable to fetch weather data (Error ${response.status}). Please try again later.`}
+      />
+    );
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    return (
+      <WeatherError
+        city={city}
+        message="Received invalid weather data. Please try again later."
+      />
+    );
+  }
 
   if (!Array.isArray(data.timeseries)) {
-    throw new Error("Unexpected weather data format");
+    return (
+      <WeatherError
+        city={city}
+        message="Unexpected weather data format. Please try again later."
+      />
+    );
   }
 
   const weekly = adaptWeatherToWeek(data.timeseries);
 
-  const summary = await generateWeeklyWeatherSummary(city, weekly);
+  let summary;
+  try {
+    summary = await generateWeeklyWeatherSummary(city, weekly);
+  } catch {
+    // If AI summary fails, use a fallback
+    summary = `Weather forecast for ${city} - ${weekly.length} days available`;
+  }
 
   return (
     <div className="flex flex-col gap-8 w-full">
