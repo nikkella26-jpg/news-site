@@ -37,7 +37,16 @@ export default async function Page({
 
   const weekly = adaptWeatherToWeek(data.timeseries);
 
-  const summary = await generateWeeklyWeatherSummary(city, weekly);
+  let summary = "";
+  try {
+    summary = await generateWeeklyWeatherSummary(city, weekly);
+  } catch (error) {
+    console.error("Failed to generate AI weather summary:", error);
+    // Fallback to a simple deterministic summary
+    const minTemp = Math.min(...weekly.map((d) => d.minTemp));
+    const maxTemp = Math.max(...weekly.map((d) => d.maxTemp));
+    summary = `Weather forecast for ${city} this week. Temperatures ranging from ${minTemp}°C to ${maxTemp}°C. Check the daily details below for more information.`;
+  }
 
   return (
     <div className="flex flex-col gap-8 w-full">
