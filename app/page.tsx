@@ -5,10 +5,12 @@ import ArticleCard from "@/components/article-card";
 import HeroSlider from "@/components/hero-slider";
 
 export default function LandingPage() {
-  const editorsHeadline = articles.find((a) => a.editorPick);
-
+  const editorsHeadline = articles.find((a) => a.isEditorsChoice);
+  const enrichedArticles = articles.map((a) => {
+    return { ...a, createdAt: new Date(a.date), updatedAt: new Date(a.date) };
+  });
   return (
-     <>
+    <>
       <HeroSlider />
 
       <section className="py-10">
@@ -19,11 +21,10 @@ export default function LandingPage() {
         </Link>
       </section>
 
-
       <section>
         <h2 className="text-2xl mb-4">Latest News</h2>
         <div className="grid md:grid-cols-3 gap-6">
-          {articles.slice(0, 5).map((a) => (
+          {enrichedArticles.slice(0, 5).map((a) => (
             <ArticleCard key={a.id} article={a} imageSize={undefined} />
           ))}
         </div>
@@ -32,8 +33,8 @@ export default function LandingPage() {
       <section className="mt-10">
         <h2 className="text-2xl mb-4">Editor’s Choice</h2>
         <div className="grid md:grid-cols-3 gap-6">
-          {articles
-            .filter((a) => a.editorPick)
+          {enrichedArticles
+            .filter((a) => a.isEditorsChoice)
             .map((a) => (
               <ArticleCard key={a.id} article={a} imageSize={undefined} />
             ))}
@@ -49,7 +50,7 @@ export default function LandingPage() {
           <Link href={`/articles/${editorsHeadline.id}`}>
             <div className="cursor-pointer">
               <Image
-                src={editorsHeadline.image}
+                src={editorsHeadline.image || "/placeholder-news.jpg"}
                 alt={editorsHeadline.title}
                 width={500}
                 height={275}
