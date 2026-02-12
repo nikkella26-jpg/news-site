@@ -5,19 +5,22 @@ import { useEffect, useState } from "react";
 import { WeeklyForecastCard } from "@/components/WeeklyForecastCard";
 
 import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
-import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
+import type { adaptWeatherToWeek } from "./adaptWeatherToWeek";
 
 type WeatherClientProps = {
   city: string;
+  weekly: ReturnType<typeof adaptWeatherToWeek>;
+  summary: string;
 };
 
-export default function WeatherClient({ city }: WeatherClientProps) {
+export default function WeatherClient({
+  city,
+  weekly,
+  summary,
+}: WeatherClientProps) {
   const [timeSlots, setTimeSlots] = useState<
     ReturnType<typeof adaptWeatherToTimeSlots>
   >([]);
-  const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>(
-    [],
-  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,9 +61,7 @@ export default function WeatherClient({ city }: WeatherClientProps) {
           throw new Error("Unexpected weather data format");
         }
 
-        // 🔑 ADAPT DATA HERE — single source of truth
         setTimeSlots(adaptWeatherToTimeSlots(data.timeseries));
-        setWeekly(adaptWeatherToWeek(data.timeseries));
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
           setError(err.message);
@@ -76,8 +77,6 @@ export default function WeatherClient({ city }: WeatherClientProps) {
     return () => controller.abort();
   }, [city]);
 
-  /* ───────────────────────── UI STATES ───────────────────────── */
-
   if (loading) {
     return (
       <div className="py-20 text-center text-slate-600">
@@ -92,8 +91,6 @@ export default function WeatherClient({ city }: WeatherClientProps) {
 
   if (timeSlots.length === 0) return null;
 
-  /* ───────────────────────── RENDER ───────────────────────── */
-
   return (
     <div className="max-w-6xl mx-auto px-4 pb-20">
       {/* Header */}
@@ -102,6 +99,7 @@ export default function WeatherClient({ city }: WeatherClientProps) {
           Weather in {city}
         </h1>
         <p className="mt-1 text-slate-600">Today’s forecast</p>
+        <p className="mt-3 text-slate-700">{summary}</p>
       </section>
 
       {/* Today – 4 time slots */}
