@@ -72,6 +72,6 @@ ${structuredData}
     const minTemp = Math.min(...temps);
     const maxTemp = Math.max(...temps);
     
-    return `Weather forecast for ${city} over the next week. Temperatures ranging from ${minTemp}°C to ${maxTemp}°C. Conditions include ${conditions.slice(0, 3).join(", ")}.`;
+    return `Weather forecast for ${city} over the next week. Temperatures ranging from ${minTemp}° to ${maxTemp}°. Conditions include ${conditions.slice(0, 3).join(", ")}.`;
   }
 }
