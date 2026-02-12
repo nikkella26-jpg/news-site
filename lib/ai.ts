@@ -35,22 +35,23 @@ export async function generateWeeklyWeatherSummary(
     condition: string;
   }[],
 ) {
-  const apiKey =
-    process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_API_KEY;
+  try {
+    const apiKey =
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_API_KEY;
 
-  if (!apiKey) {
-    throw new Error("AI API key missing");
-  }
+    if (!apiKey) {
+      throw new Error("AI API key missing");
+    }
 
-  const google = createGoogleGenerativeAI({ apiKey });
+    const google = createGoogleGenerativeAI({ apiKey });
 
-  const structuredData = weeklyData
-    .map((d) => `${d.dayLabel}: ${d.minTemp}° to ${d.maxTemp}°, ${d.condition}`)
-    .join("\n");
+    const structuredData = weeklyData
+      .map((d) => `${d.dayLabel}: ${d.minTemp}° to ${d.maxTemp}°, ${d.condition}`)
+      .join("\n");
 
-  const { text } = await generateText({
-    model: google("gemini-2.5-flash"),
-    prompt: `
+    const { text } = await generateText({
+      model: google("gemini-2.5-flash"),
+      prompt: `
 Write a concise weekly weather summary for ${city}.
 Use neutral and informative language.
 Limit to 3–4 sentences.
@@ -59,7 +60,18 @@ Base your summary strictly on this data:
 
 ${structuredData}
 `,
-  });
+    });
 
-  return text;
+    return text;
+  } catch (error) {
+    console.error("Failed to generate AI weather summary:", error);
+    
+    // Return a safe fallback summary based on the actual data
+    const conditions = weeklyData.map((d) => d.condition);
+    const temps = weeklyData.flatMap((d) => [d.minTemp, d.maxTemp]);
+    const minTemp = Math.min(...temps);
+    const maxTemp = Math.max(...temps);
+    
+    return `Weather forecast for ${city} over the next week. Temperatures ranging from ${minTemp}°C to ${maxTemp}°C. Conditions include ${conditions.slice(0, 3).join(", ")}.`;
+  }
 }
