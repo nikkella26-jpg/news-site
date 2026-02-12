@@ -14,7 +14,7 @@ function WeatherError({ city, message }: WeatherErrorProps) {
       <div
         className="
         fixed inset-0 -z-20
-        bg-linear-to-b
+        bg-gradient-to-b
         from-slate-200
         via-cyan-100
         to-stone-100
@@ -118,7 +118,7 @@ export default async function Page({
       <div
         className="
         fixed inset-0 -z-20
-        bg-linear-to-b
+        bg-gradient-to-b
         from-slate-200
         via-cyan-100
         to-stone-100

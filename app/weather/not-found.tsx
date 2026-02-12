@@ -4,7 +4,7 @@ export default function NotFound() {
       <div
         className="
         fixed inset-0 -z-20
-        bg-linear-to-b
+        bg-gradient-to-b
         from-slate-200
         via-cyan-100
         to-stone-100
