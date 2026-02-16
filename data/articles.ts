@@ -4,6 +4,7 @@ export const articles = [
     id: "1",
     category: "sports",
     title: "What's your bet on Super Sunday?",
+    slug: "What's your bet on Super Sunday", // LÄGG TILL DENNA RAD
     date: "January 24, 2026",
     image: "https://www.rollingstone.com/wp-content/uploads/2025/02/eagles-super-bowl-recap.jpg?w=1581&h=1054&crop=1",
     content: "This year one kickass Super Sunday show. Let's get ready to rumble!"
@@ -12,6 +13,7 @@ export const articles = [
     id: "2",
     category: "world", // This acts as the "tag" or "bucket"
     title: "Greenlands future at stake! What's the deal Steale?",
+    slug: "Greenlands future at stake! What's the deal Steale?", // LÄGG TILL DENNA RAD
     date: "January 20, 2026",
     image: "https://www.fmn.dk/globalassets/fmn/billeder/artikel/-arktis-1146-2020-artikel.jpg",
     content: "Is there going to be an invasion of Greenland or is it just talk?"
@@ -19,6 +21,7 @@ export const articles = [
   {
     id: "3",
     title: "World's fastest Hot Dog eater! Joey ate it!",
+    slug: "worlds-fastest-hot-dog-eater-joey-ate-it", // LÄGG TILL DENNA RAD
     date: "January 19, 2026",
     image: "https://people.com/thmb/qH4EgO6rYa_l0qdaQhNsCId7Nic=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(999x0:1001x2):format(webp)/joey-chestnut-hot-dogs-2-a674c1f6ef634721b7382de34737df25.jpg",
     content: `Till ya puke!`
@@ -26,6 +29,7 @@ export const articles = [
   {
     id: "4",
     title: "Eight dead in avalanche in Austria",
+    slug: "Eight dead in avalanche in Austria", // LÄGG TILL DENNA RAD
     date: "January 20, 2026",
     image: "https://i.guim.co.uk/img/media/b1ccff2c540bb7db3b6eb4bf8e679a29388b87a3/0_0_2040_1360/master/2040.jpg?width=620&dpr=2&s=none&crop=none",
     // Use backticks here to allow pressing Enter for a new line
@@ -37,6 +41,7 @@ Emergency services were deployed to the Tyrol region following heavy snowfall.`
     id: "5",
     category: "politics",
     title: "Is Europe ready for war and what is Brussels plan?",
+    slug: "Is Europe ready for war and what is Brussels plan?", // LÄGG TILL DENNA RAD
     date: "January 20, 2026",
     image: "https://images.euronews.com/articles/stories/09/59/08/59/1366x768_cmsv2_a1a68f06-5be7-518b-be9e-b7328fb4aa4e-9590859.jpg",
     content:"Get ready for the ennemy, nasty chude invaders!",
@@ -46,6 +51,7 @@ Emergency services were deployed to the Tyrol region following heavy snowfall.`
   id: "6",
   category: "tech", // This acts as the "tag" or "bucket"
   title: "The Rise of FPV Drones in Wars",
+  slug: "The Rise of FPV Drones in Wars", // LÄGG TILL DENNA RAD
   date: "January 25, 2026",
   image: "https://img.glavnoe.in.ua/uploads/2025/01/29124107/472389076_949811590665253_8114851392640592500_n-1.webp",
   content: "Europé is behind Ukraine all the way! Drones find application in a variety of military operations, including electronic warfare, explosive ordnance disposal, training and logistics support. However, they are most frequently employed in intelligence, surveillance, target acquisition, and reconnaissance (ISTAR) missions"
@@ -54,6 +60,7 @@ Emergency services were deployed to the Tyrol region following heavy snowfall.`
   id: "7",
   category: "sports", // This acts as the "tag" or "bucket"
   title: "Golf: American Express 2026 leader",
+  slug: "Golf: American Express 2026 leader", // LÄGG TILL DENNA RAD
   date: "January 25, 2026",
   image: "https://www.gannett-cdn.com/authoring/authoring-images/2026/01/25/SGLF/88343372007-getty-images-2258016052.jpg?crop=7554,4249,x0,y0&width=2560",
   content: "As the tournament progresses the South Korean Si Woo Kim is in the lead."
