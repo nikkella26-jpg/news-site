@@ -109,7 +109,13 @@ export default function WeatherClient({
             key={slot.slot}
             className="rounded-2xl bg-white/80 backdrop-blur-sm border border-slate-100"
           >
-            {/* Add weather slot content here */}
+            <div className="p-4">
+              <p className="text-sm font-medium text-slate-600">{slot.slot}</p>
+              <p className="text-2xl font-bold text-slate-800">
+                {slot.avgTemp}°
+              </p>
+              <p className="text-sm text-slate-600">{slot.condition}</p>
+            </div>
           </div>
         ))}
       </section>
