@@ -17,7 +17,7 @@ export default async function ArticlesPage() {
             className="border p-4 rounded-lg shadow-sm flex flex-col"
           >
             <Image
-              src={article.image}
+              src={article.image || "/placeholder-news.jpg"}
               className="w-full h-40 object-cover rounded mb-4"
               alt={article.title}
               width={100}
