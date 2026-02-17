@@ -23,9 +23,57 @@ const conditionIcon = (summary: string) => {
   return "🌤️";
 };
 
+const DEFAULT_CITY = "Linköping";
+
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
-  const city = "Linköping";
+  const [city, setCity] = useState<string>(DEFAULT_CITY);
+
+  // Get user's location on mount
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      return; // Geolocation not supported, use default city
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          // Reverse geocode using OpenStreetMap Nominatim API
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+            {
+              headers: {
+                "User-Agent": "NewsWeatherWidget/1.0",
+              },
+            }
+          );
+
+          if (response.ok) {
+            const data = await response.json();
+            const detectedCity =
+              data.address?.city ||
+              data.address?.town ||
+              data.address?.village ||
+              data.address?.municipality ||
+              DEFAULT_CITY;
+            setCity(detectedCity);
+          }
+        } catch (error) {
+          console.error("Failed to reverse geocode location:", error);
+          // Keep using default city
+        }
+      },
+      (error) => {
+        console.warn("Geolocation permission denied or failed:", error.message);
+        // Keep using default city
+      },
+      {
+        timeout: 5000,
+        maximumAge: 300000, // Cache position for 5 minutes
+      }
+    );
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
