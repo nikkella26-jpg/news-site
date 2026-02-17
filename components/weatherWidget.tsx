@@ -24,6 +24,8 @@ const conditionIcon = (summary: string) => {
 };
 
 const DEFAULT_CITY = "Linköping";
+const GEOLOCATION_TIMEOUT_MS = 5000;
+const POSITION_CACHE_DURATION_MS = 300000; // 5 minutes
 
 export default function WeatherWidget() {
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
@@ -40,6 +42,20 @@ export default function WeatherWidget() {
         try {
           // Reverse geocode using OpenStreetMap Nominatim API
           const { latitude, longitude } = position.coords;
+          
+          // Validate coordinates
+          if (
+            typeof latitude !== "number" ||
+            typeof longitude !== "number" ||
+            latitude < -90 ||
+            latitude > 90 ||
+            longitude < -180 ||
+            longitude > 180
+          ) {
+            console.error("Invalid coordinates received from geolocation");
+            return;
+          }
+
           const response = await fetch(
             `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
             {
@@ -69,8 +85,8 @@ export default function WeatherWidget() {
         // Keep using default city
       },
       {
-        timeout: 5000,
-        maximumAge: 300000, // Cache position for 5 minutes
+        timeout: GEOLOCATION_TIMEOUT_MS,
+        maximumAge: POSITION_CACHE_DURATION_MS,
       }
     );
   }, []);
