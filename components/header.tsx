@@ -48,7 +48,7 @@ export default function Header() {
 
         {/* Center: Weather */}
         <div className="absolute left-1/2 -translate-x-1/2">
-          <WeatherWidget />
+          <WeatherWidget location="Linköping" />
         </div>
 
         {/* Right side: Auth, Subscribe + Theme toggle */}
@@ -89,18 +89,17 @@ export default function Header() {
               </button>
             )
           )}
-          
+
           <Link
             href="/subscribe"
             className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition text-sm"
           >
             Subscribe
           </Link>
-          
+
           <ModeToggle />
         </div>
       </nav>
     </header>
   );
 }
-

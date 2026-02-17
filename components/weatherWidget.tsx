@@ -23,9 +23,10 @@ const conditionIcon = (summary: string) => {
   return "🌤️";
 };
 
-export default function WeatherWidget() {
+export default function WeatherWidget({ location }: { location: string }) {
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
-  const city = "Linköping";
+
+  const encodedLocation = encodeURIComponent(location);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -40,7 +41,7 @@ export default function WeatherWidget() {
         );
 
         const response = await fetch(
-          `${apiBaseUrl}/forecast/location/${city}`,
+          `${apiBaseUrl}/forecast/location/${encodedLocation}`,
           { signal: controller.signal },
         );
 
@@ -53,7 +54,7 @@ export default function WeatherWidget() {
         setWeather({
           temp: Math.round(now.temp),
           summary: now.summary,
-          city: city,
+          city: location,
         });
       } catch {
         // Intentionally silent — navbar widgets should never shout
@@ -62,7 +63,7 @@ export default function WeatherWidget() {
 
     fetchWeather();
     return () => controller.abort();
-  }, [city]);
+  }, [encodedLocation, location]);
 
   if (!weather) return null;
 
@@ -71,18 +72,20 @@ export default function WeatherWidget() {
       <Link
         href="/weather"
         className="
-        flex justify-items-center  gap-2
-        rounded-full
-        backdrop-blur-sm
-        px-3 py-1.5
-        text-sm
-        transition
-      "
+         flex items-center gap-2
+          rounded-full
+          backdrop-blur-sm
+          px-4 py-2
+          text-base
+          font-medium
+          transition  
+          "
         aria-label="View detailed weather forecast"
       >
         <span>
-          {city}: {conditionIcon(weather.summary)}
+          {location}: {conditionIcon(weather.summary)}
         </span>
+
         <span className="font-medium">{weather.temp}°</span>
       </Link>
     </Button>

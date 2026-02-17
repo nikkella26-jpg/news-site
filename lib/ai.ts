@@ -16,9 +16,9 @@ export async function generateArticleContent(title: string) {
   const { text } = await generateText({
     model: google("gemini-2.5-flash"),
     prompt: `Write a professional news article in English with the title: "${title}".
-The article should include a clear lead paragraph and several body paragraphs.
-Write in a journalistic style.
-Do not use markdown headers. Only plain text with double line breaks between paragraphs.`,
+    The article should include a clear lead paragraph and several body paragraphs.
+    Write in a journalistic style.
+    Do not use markdown headers. Only plain text with double line breaks between paragraphs.`,
   });
 
   return text;
@@ -51,11 +51,11 @@ export async function generateWeeklyWeatherSummary(
   const { text } = await generateText({
     model: google("gemini-2.5-flash"),
     prompt: `
-Write a concise weekly weather summary for ${city}.
-Use neutral and informative language.
-Limit to 3–4 sentences.
+Write a concise weekly weather forecast summary for ${city}.
+Use precise and informative forecast for the coming 7 days.
+Limit to 5 sentences.
 Do not exaggerate or invent information.
-Base your summary strictly on this data:
+Base your summary strictly on this data and target audience - 'holiday makers, long distance drivers, farmers,
 
 ${structuredData}
 `,

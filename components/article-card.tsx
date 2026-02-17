@@ -1,9 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Article } from "@/lib/generated/prisma";
+
+interface ArticleCardArticle {
+  id: string;
+  title: string;
+  image?: string | null;
+  excerpt?: string;
+}
 
 interface ArticleCardProps {
-  article: Article & { excerpt?: string };
+  article: ArticleCardArticle;
   imageSize?: "editor" | "standard";
 }
 

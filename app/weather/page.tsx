@@ -1,56 +1,63 @@
-import WeatherClient from "./WeatherClient";
-import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
-import { generateWeeklyWeatherSummary } from "@/lib/ai";
+"use client";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ city?: string }>;
-}) {
-  const params = await searchParams;
+import { useEffect, useState } from "react";
 
-  const city = typeof params.city === "string" ? params.city : "Linköping";
+type WeatherResponse = {
+  city: string;
+  currentTemperature: number;
+};
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL?.replace(
-    /\/+$/,
-    "",
-  );
+const STOCKHOLM = {
+  city: "Stockholm",
+  lat: 59.3293,
+  lon: 18.0686,
+};
 
-  if (!apiBaseUrl) {
-    throw new Error("Weather API URL missing");
-  }
+function resolveLocation(): Promise<{
+  city: string;
+  lat: number;
+  lon: number;
+}> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      resolve(STOCKHOLM);
+      return;
+    }
+    navigator.geolocation.getCurrentPosition((position) => {
+      resolve({
+        city: "your location",
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+      });
+    });
+  });
+}
 
-  const response = await fetch(
-    `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
-    { cache: "no-store" },
-  );
+export default function Weatherpage() {
+  const [weather, setWeather] = useState<WeatherResponse | null>(null);
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch weather data");
-  }
+  useEffect(() => {
+    async function init() {
+      const coords = await resolveLocation();
 
-  const data = await response.json();
+      const res = await fetch(
+        `/api/weather?lat=${coords.lat}&lon=${coords.lon}`,
+      );
 
-  if (!Array.isArray(data.timeseries)) {
-    throw new Error("Unexpected weather data format");
-  }
+      const data = await res.json();
+      setWeather(data);
+    }
 
-  const weekly = adaptWeatherToWeek(data.timeseries);
-
-  const summary = await generateWeeklyWeatherSummary(city, weekly);
+    init();
+  }, []);
 
   return (
-    <div className="flex flex-col gap-8 w-full">
-      <div
-        className="
-        fixed inset-0 -z-20
-        bg-linear-to-b
-        from-slate-200
-        via-cyan-100
-        to-stone-100
-        "
-      />
-      <WeatherClient city={city} weekly={weekly} summary={summary} />
+    <div>
+      {weather && (
+        <div className="badge">
+          {weather.city}: {weather?.currentTemperature}° )
+        </div>
+      )}
     </div>
   );
 }

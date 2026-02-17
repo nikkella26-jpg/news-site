@@ -8,7 +8,7 @@ export default function LandingPage() {
   const editorsHeadline = articles.find((a) => a.editorPick);
 
   return (
-     <>
+    <>
       <HeroSlider />
 
       <section className="py-10">
@@ -18,7 +18,6 @@ export default function LandingPage() {
           </h1>
         </Link>
       </section>
-
 
       <section>
         <h2 className="text-2xl mb-4">Latest News</h2>
