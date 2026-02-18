@@ -15,6 +15,7 @@ export default async function LandingPage() {
   return (
     <>
       <HeroSlider articles={articles} />
+      <HeroSlider />
 
       <section className="py-10">
         <Link href="/top-stories">
