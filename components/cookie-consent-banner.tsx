@@ -34,9 +34,9 @@ export const CookieConsentBanner = () => {
       <span className="flex-1">
         We use cookies to enhance the news site experience.
         Read all about it in{" "}
-        <a href="/privacy" className="underline hover:text-primary">
+        <Link href="/privacy" className="underline hover:text-primary">
           Privacy Policy
-        </a>.
+        </Link>.
       </span>
       <div className="flex gap-2">
         <Button
