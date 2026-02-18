@@ -6,7 +6,7 @@ import { sendMail } from "./mail";
 import { stripe } from "@better-auth/stripe";
 import Stripe from "stripe";
 // If your Prisma file is located elsewhere, you can change the path
-import prisma from "./prisma";
+import { prisma }  from "./prisma";
 import { nextCookies } from "better-auth/next-js";
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;

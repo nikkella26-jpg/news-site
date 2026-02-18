@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { articles } from "@/data/articles";
 import {
   Carousel,
   CarouselContent,
@@ -11,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-export default function HeroSlider() {
+export default function HeroSlider({ articles }) {
   const latest = articles.slice(0, 5);
 
   return (
@@ -20,10 +19,10 @@ export default function HeroSlider() {
         <CarouselContent>
           {latest.map((article) => (
             <CarouselItem key={article.id}>
-              <Link href={`/articles/${article.id}`}>
+              <Link href={`/articles/${article.slug}`}>
                 <div className="relative w-full h-87.5 md:h-112.5 rounded-xl overflow-hidden cursor-pointer">
                   <Image
-                    src={article.image}
+                    src={article.image || "/placeholder-news.jpg"}
                     alt={article.title}
                     fill
                     className="object-cover"

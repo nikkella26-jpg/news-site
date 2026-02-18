@@ -1,24 +1,37 @@
-// actions/increment-view.ts
 "use server";
 
-// CHANGE THIS:
-// import { viewSchema } from "@/lib/validators";
+import { prisma } from "@/lib/prisma";
+import { z } from "zod";
 
-// TO THIS:
-import { viewSchema } from "@/data/validator"; 
-
-const views = new Map<string, number>();
+// Validator direkt här för enkelhet, eller behåll din import
+const viewSchema = z.object({
+  articleId: z.string().uuid(), // Eftersom din modell använder UUID
+});
 
 export async function incrementView(id: string) {
-
-  // Now the validator will work correctly
+  // 1. Validera ID:t
   const result = viewSchema.safeParse({ articleId: id });
   
   if (!result.success) {
-    throw new Error("Invalid Article ID format");
+    console.error("Valideringsfel:", result.error.format());
+    // Vi returnerar 0 eller nuvarande istället för att krascha hela sidan
+    return 0; 
   }
 
-  const currentViews = views.get(id) || 0;
-  views.set(id, currentViews + 1);
-  return currentViews + 1;
+  try {
+    // 2. Uppdatera visningar direkt i PostgreSQL via Prisma
+    const updatedArticle = await prisma.article.update({
+      where: { id },
+      data: {
+        views: {
+          increment: 1, // Prisma-kommando för att öka med 1 atomiskt
+        },
+      },
+    });
+
+    return updatedArticle.views;
+  } catch (error) {
+    console.error("Kunde inte uppdatera visningar:", error);
+    return 0;
+  }
 }

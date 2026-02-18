@@ -8,8 +8,13 @@ export default function LandingPage() {
   const editorsHeadline = articles.find((a) => a.editorPick);
 
   return (
+<<<<<<< Updated upstream
      <>
       <HeroSlider />
+=======
+    <>
+      <HeroSlider articles={articles} />
+>>>>>>> Stashed changes
 
       <section className="py-10">
         <Link href="/top-stories">
