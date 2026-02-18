@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-export default function HeroSlider({ articles }) {
+export default function HeroSlider({ articles = [] }) {
   const latest = articles.slice(0, 5);
 
   return (

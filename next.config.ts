@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "heartland.org", // 👈 Tillagd för din senaste bild
+        hostname: "heartland.org",
       },
       {
         protocol: "https",
@@ -59,6 +59,16 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.euronews.com",
+      },
+
+      // ✅ REQUIRED for Olympics images
+      {
+        protocol: "https",
+        hostname: "img.olympics.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.olympics.com",
       },
     ],
   },
