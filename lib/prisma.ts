@@ -7,7 +7,7 @@ const globalForPrisma = global as unknown as {
 
 // Hard‑coded connection string (no env needed)
 const adapter = new PrismaPg({
-  connectionString: "postgresql://postgres:EPo123@localhost:5432/newsproject",
+  connectionString: "process.env.DATABASE_URL",
 });
 
 export const prisma =
