@@ -8,7 +8,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",   // 👈 REQUIRED
   },
   datasource: {
-    url: "postgresql://postgres:EPo123@localhost:5432/newsproject",
+    url: process.env["DATABASE_URL"],
   },
   engineType: "node",
 });
