@@ -4,7 +4,8 @@ export type TimeSlot = "00-06" | "06-12" | "12-18" | "18-24";
 
 export type AdaptedTimeSlot = {
   slot: TimeSlot;
-  avgTemp: number;
+  minTemp: number;
+  maxTemp: number;
   condition: string;
 };
 
@@ -38,8 +39,9 @@ export function adaptWeatherToTimeSlots(
       const entries = slotMap[slot];
       if (entries.length === 0) return null;
 
-      const avgTemp =
-        entries.reduce((sum, e) => sum + e.temp, 0) / entries.length;
+      const temperatures = entries.map((e) => e.temp);
+      const minTemp = Math.min(...temperatures);
+      const maxTemp = Math.max(...temperatures);
 
       const conditionCount = new Map<string, number>();
 
@@ -56,7 +58,8 @@ export function adaptWeatherToTimeSlots(
 
       return {
         slot,
-        avgTemp: Math.round(avgTemp),
+        minTemp: Math.round(minTemp),
+        maxTemp: Math.round(maxTemp),
         condition,
       };
     })

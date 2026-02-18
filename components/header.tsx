@@ -48,7 +48,7 @@ export default function Header() {
 
         {/* Center: Weather */}
         <div className="absolute left-1/2 -translate-x-1/2">
-          <WeatherWidget location="Linköping" />
+          <WeatherWidget />
         </div>
 
         {/* Right side: Auth, Subscribe + Theme toggle */}

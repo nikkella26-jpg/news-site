@@ -1,3 +1,5 @@
+"use server";
+
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 
@@ -13,15 +15,19 @@ export async function generateArticleContent(title: string) {
 
   const google = createGoogleGenerativeAI({ apiKey });
 
-  const { text } = await generateText({
-    model: google("gemini-2.5-flash"),
-    prompt: `Write a professional news article in English with the title: "${title}".
-    The article should include a clear lead paragraph and several body paragraphs.
-    Write in a journalistic style.
-    Do not use markdown headers. Only plain text with double line breaks between paragraphs.`,
-  });
+  try {
+    const { text } = await generateText({
+      model: google("gemini-2.0-flash"),
+      prompt: `Write a professional news article in English with the title: "${title}".
+      The article should include a clear lead paragraph and several body paragraphs.
+      Write in a journalistic style.
+      Do not use markdown headers. Only plain text with double line breaks between paragraphs.`,
+    });
 
-  return text;
+    return text;
+  } catch (error) {
+    return "";
+  }
 }
 
 /* ───────────────────────── WEATHER SUMMARY ───────────────────────── */
@@ -48,18 +54,23 @@ export async function generateWeeklyWeatherSummary(
     .map((d) => `${d.dayLabel}: ${d.minTemp}° to ${d.maxTemp}°, ${d.condition}`)
     .join("\n");
 
-  const { text } = await generateText({
-    model: google("gemini-2.5-flash"),
-    prompt: `
-Write a concise weekly weather forecast summary for ${city}.
-Use precise and informative forecast for the coming 7 days.
-Limit to 5 sentences.
-Do not exaggerate or invent information.
-Base your summary strictly on this data and target audience - 'holiday makers, long distance drivers, farmers,
+  try {
+    const { text } = await generateText({
+      model: google("gemini-2.0-flash"),
+      prompt: `
+As a professional meteorologist, write a concise weekly weather forecast summary for ${city} based on the data below.
+Provide a clear, helpful snapshot for the coming 7 days.
+Limit to 3-5 sentences.
+Focus on significant changes, temperatures, and general conditions.
+Do not invent data.
 
+Weekly forecast data:
 ${structuredData}
 `,
-  });
+    });
 
-  return text;
+    return text;
+  } catch (error) {
+    return "";
+  }
 }
