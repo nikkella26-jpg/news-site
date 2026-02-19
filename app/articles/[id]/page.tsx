@@ -21,7 +21,7 @@ export default async function ArticleDetail({
 
       <h1 className="text-4xl font-bold">{article.title}</h1>
       <Image
-        src={article.image || "/placeholder-news.jpg"}
+        src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
         className="object-cover"
         alt={article.title}
         width={500}

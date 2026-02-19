@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { articles } from "@/data/articles";
 import {
   Carousel,
   CarouselContent,
@@ -12,7 +11,9 @@ import {
 } from "@/components/ui/carousel";
 import prisma from "@/lib/prisma";
 
-export default async function HeroSlider({ articles }: { articles: Article[] }) {
+import { Article } from "@/lib/generated/prisma";
+
+export default function HeroSlider({ articles }: { articles: Article[] }) {
 
   return (
     <div className="w-full max-w-5xl mx-auto mb-10">
@@ -23,7 +24,7 @@ export default async function HeroSlider({ articles }: { articles: Article[] }) 
               <Link href={`/articles/${article.id}`}>
                 <div className="relative w-full h-87.5 md:h-112.5 rounded-xl overflow-hidden cursor-pointer">
                   <Image
-                    src={article.image}
+                    src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
                     alt={article.title}
                     fill
                     className="object-cover"

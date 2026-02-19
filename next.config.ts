@@ -21,6 +21,7 @@ const nextConfig = {
       { protocol: "https", hostname: "cnsd.gov.hk" },
       { protocol: "https", hostname: "heartland.org" },
       { protocol: "https", hostname: "www.thegatewaypundit.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 };
