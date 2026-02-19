@@ -56,7 +56,7 @@ export default async function LandingPage() {
               <div className="w-full mb-4">
                 <div className="relative w-full overflow-hidden rounded-lg">
                   <Image
-                    src={editorsHeadline.image || "/placeholder-news.jpg"}
+                    src={editorsHeadline.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
                     alt={editorsHeadline.title}
                     width={900}      // narrower, optimized
                     height={500}     // maintains aspect ratio
