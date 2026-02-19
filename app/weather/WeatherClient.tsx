@@ -11,7 +11,10 @@ type WeatherClientProps = {
   city: string;
 };
 
-export default function WeatherClient({ city }: WeatherClientProps) {
+export default function WeatherClient({
+  city: initialCity,
+}: WeatherClientProps) {
+  const [city, setCity] = useState(initialCity);
   const [timeSlots, setTimeSlots] = useState<
     ReturnType<typeof adaptWeatherToTimeSlots>
   >([]);
@@ -20,8 +23,40 @@ export default function WeatherClient({ city }: WeatherClientProps) {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [locationResolved, setLocationResolved] = useState(false);
 
+  // Resolve user's geolocation (if available)
   useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationResolved(true);
+      return;
+    }
+
+    const timeout = setTimeout(() => setLocationResolved(true), 5000);
+
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        // TODO: Convert coordinates to city name if desired
+        // For now, just mark location as resolved and use initial city
+        setLocationResolved(true);
+        clearTimeout(timeout);
+      },
+      () => {
+        // Geolocation denied or error
+        setLocationResolved(true);
+        clearTimeout(timeout);
+      },
+    );
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Fetch weather only after location is resolved
+  useEffect(() => {
+    if (!locationResolved) {
+      return;
+    }
+
     const controller = new AbortController();
 
     async function fetchWeather() {
@@ -74,7 +109,7 @@ export default function WeatherClient({ city }: WeatherClientProps) {
 
     fetchWeather();
     return () => controller.abort();
-  }, [city]);
+  }, [city, locationResolved]);
 
   /* ───────────────────────── UI STATES ───────────────────────── */
 
