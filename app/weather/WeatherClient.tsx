@@ -27,19 +27,51 @@ type WeatherClientProps = {
 };
 
 export default function WeatherClient({
-  city,
-  weekly,
-  timeSlots,
+  city: initialCity,
 }: WeatherClientProps) {
-  const [aiWeeklySummary, setAiWeeklySummary] = useState<string>("");
-  const [loadingAiSummary, setLoadingAiSummary] = useState(false);
-  const [lastFetchedCity, setLastFetchedCity] = useState<string>("");
+  const [city, setCity] = useState(initialCity);
+  const [timeSlots, setTimeSlots] = useState<
+    ReturnType<typeof adaptWeatherToTimeSlots>
+  >([]);
+  const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>(
+    [],
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [locationResolved, setLocationResolved] = useState(false);
 
-  // Create a memoized key for the weekly data to avoid re-renders on reference changes
-  const weeklyDataKey = JSON.stringify(weekly);
-
-  // Generate AI weekly summary with Debounce
+  // Resolve user's geolocation (if available)
   useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationResolved(true);
+      return;
+    }
+
+    const timeout = setTimeout(() => setLocationResolved(true), 5000);
+
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        // TODO: Convert coordinates to city name if desired
+        // For now, just mark location as resolved and use initial city
+        setLocationResolved(true);
+        clearTimeout(timeout);
+      },
+      () => {
+        // Geolocation denied or error
+        setLocationResolved(true);
+        clearTimeout(timeout);
+      },
+    );
+
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Fetch weather only after location is resolved
+  useEffect(() => {
+    if (!locationResolved) {
+      return;
+    }
+
     const controller = new AbortController();
 
     // Debounce: Wait 1000ms before calling the AI
@@ -64,11 +96,9 @@ export default function WeatherClient({
       }
     }, 1000);
 
-    return () => {
-      clearTimeout(debounceTimer);
-      controller.abort();
-    };
-  }, [city, weeklyDataKey, lastFetchedCity]);
+    fetchWeather();
+    return () => controller.abort();
+  }, [city, locationResolved]);
 
 
   if (timeSlots.length === 0) return null;
