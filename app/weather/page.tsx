@@ -26,9 +26,9 @@ export default function WeatherPage() {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          // Reverse geocoding using Nominatim (free, no key required for low volume)
+          const nominatimApiUrl = process.env.NEXT_PUBLIC_NOMINATIM_API_URL || "https://nominatim.openstreetmap.org";
           const response = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            `${nominatimApiUrl}/reverse?format=json&lat=${latitude}&lon=${longitude}`,
             { headers: { "Accept-Language": "en" } }
           );
           const data = await response.json();
@@ -59,7 +59,11 @@ export default function WeatherPage() {
         const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL?.replace(
           /\/+$/,
           "",
-        ) || "https://weather.lexlink.se";
+        );
+
+        if (!apiBaseUrl) {
+          throw new Error("Weather API URL is not configured in environment variables.");
+        }
 
         const response = await fetch(
           `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,

@@ -26,6 +26,7 @@ export async function generateArticleContent(title: string) {
 
     return text;
   } catch (error) {
+    console.error("AI article generation failed:", error);
     return "";
   }
 }
@@ -71,6 +72,7 @@ ${structuredData}
 
     return text;
   } catch (error) {
+    console.error("Failed to generate AI weekly summary:", error);
     return "";
   }
 }

@@ -36,13 +36,20 @@ export default function WeatherWidget() {
         async (position) => {
           try {
             const { latitude, longitude } = position.coords;
-            // Reverse geocoding using Nominatim
+            const nominatimApiUrl =
+              process.env.NEXT_PUBLIC_NOMINATIM_API_URL ||
+              "https://nominatim.openstreetmap.org";
             const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-              { headers: { "Accept-Language": "en" } }
+              `${nominatimApiUrl}/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+              { headers: { "Accept-Language": "en" } },
             );
             const data = await response.json();
-            const resolvedCity = data.address?.city || data.address?.town || data.address?.village || data.address?.municipality || DEFAULT_LOCATION;
+            const resolvedCity =
+              data.address?.city ||
+              data.address?.town ||
+              data.address?.village ||
+              data.address?.municipality ||
+              DEFAULT_LOCATION;
             setLocation(resolvedCity);
           } catch (err) {
             console.error("Widget reverse geocoding failed:", err);
@@ -87,19 +94,22 @@ export default function WeatherWidget() {
 
         let bestMatch = data.timeseries?.[0];
         if (data.timeseries) {
-          const todaysEntries = data.timeseries.filter(e => e.validTime.startsWith(nowDay));
+          const todaysEntries = data.timeseries.filter((e) =>
+            e.validTime.startsWith(nowDay),
+          );
           if (todaysEntries.length > 0) {
             bestMatch = todaysEntries.reduce((prev, curr) => {
               const prevHour = new Date(prev.validTime).getHours();
               const currHour = new Date(curr.validTime).getHours();
-              return Math.abs(currHour - nowHour) < Math.abs(prevHour - nowHour) ? curr : prev;
+              return Math.abs(currHour - nowHour) < Math.abs(prevHour - nowHour)
+                ? curr
+                : prev;
             });
           }
         }
 
         if (!bestMatch) return;
 
-        console.log(`WeatherWidget: Fetched weather for ${location}`);
         setWeather({
           temp: Math.round(bestMatch.temp),
           summary: bestMatch.summary,
@@ -118,7 +128,11 @@ export default function WeatherWidget() {
   if (!weather) return null;
 
   return (
-    <Button variant={"secondary"} asChild className="h-auto p-0 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+    <Button
+      variant={"secondary"}
+      asChild
+      className="h-auto p-0 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+    >
       <Link
         href="/weather"
         className="
@@ -137,20 +151,29 @@ export default function WeatherWidget() {
         aria-label="View detailed weather forecast"
       >
         <div className="flex flex-col items-start leading-[1.1] py-0.5">
-          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">{location}</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+            {location}
+          </span>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-lg">{conditionIcon(weather.summary)}</span>
-            <span className="text-sm text-slate-700 dark:text-slate-200 font-medium capitalize whitespace-nowrap">{weather.summary}</span>
+            <span className="text-sm text-slate-700 dark:text-slate-200 font-medium capitalize whitespace-nowrap">
+              {weather.summary}
+            </span>
           </div>
         </div>
 
-        <div className="w-px h-6 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+        <div
+          className="w-px h-6 bg-slate-200 dark:bg-slate-700"
+          aria-hidden="true"
+        />
 
         <div className="flex items-center gap-2">
           <span className="text-xl font-bold text-slate-900 dark:text-slate-100 tracking-tighter">
             {weather.temp}°
           </span>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase">C</span>
+          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase">
+            C
+          </span>
         </div>
       </Link>
     </Button>

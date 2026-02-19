@@ -49,19 +49,14 @@ export default function WeatherClient({
         return;
       }
 
-      console.log(`[AI Debounce] Triggering summary for ${city}...`);
-      setLoadingAiSummary(true);
 
-      try {
-        const result = await generateWeeklyWeatherSummary(city, weekly);
-
-        // Ensure component is still mounted and this is still the active request
-        if (!controller.signal.aborted) {
           setAiWeeklySummary(result);
           setLastFetchedCity(city);
         }
       } catch (err) {
-        // Silent
+        if (err instanceof Error) {
+          console.error("AI summary generation failed:", err.message);
+        }
       } finally {
         if (!controller.signal.aborted) {
           setLoadingAiSummary(false);
