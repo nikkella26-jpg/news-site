@@ -1,5 +1,7 @@
-import { articles } from "@/data/articles";
+
 import { incrementView } from "@/actions/increment-view";
+import prisma from "@/lib/prisma";
+import Image from "next/image";
 
 export default async function ArticleDetail({
   params,
@@ -8,7 +10,7 @@ export default async function ArticleDetail({
 }) {
   const { id } = await params;
 
-  const article = articles.find(a => a.id === id);
+  const article = await prisma.article.findUnique({ where: { id } });
   if (!article) return <p>Not found</p>;
 
   // Increment views and get updated count
@@ -16,8 +18,15 @@ export default async function ArticleDetail({
 
   return (
     <article>
-      <h1 className="text-4xl font-bold">{article.title}</h1>
 
+      <h1 className="text-4xl font-bold">{article.title}</h1>
+      <Image
+        src={article.image || "/placeholder-news.jpg"}
+        className="object-cover"
+        alt={article.title}
+        width={500}
+        height={500}
+      />
       <p className="text-gray-500 mt-2">
         Views: {updatedViews}
       </p>
