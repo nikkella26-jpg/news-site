@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { articles } from "@/data/articles";
+import { prisma } from "@/lib/prisma";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -10,9 +11,10 @@ interface CategoryPageProps {
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
 
-  const categoryArticles = articles.filter(
-    (a) => a.category?.toLowerCase() === slug.toLowerCase(),
-  );
+  const categoryArticles = await prisma.article.findMany({
+    where: { category: { name: slug.toLowerCase() } },
+    orderBy: { createdAt: "desc" },
+  });
 
   const categoryLabels: Record<string, string> = {
     world: "World News",

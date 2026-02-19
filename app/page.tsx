@@ -8,13 +8,17 @@ export default async function LandingPage() {
   const articles = await prisma.article.findMany({
     orderBy: { createdAt: "desc" }
   });
+  const heroArticles = await prisma.article.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 5,
+  });
 
   // Correct Prisma field: isEditorsChoice
   const editorsHeadline = articles.find((a) => a.isEditorsChoice);
 
   return (
     <>
-      <HeroSlider />
+      <HeroSlider articles={heroArticles} />
 
       <section className="py-10">
         <Link href="/top-stories">
