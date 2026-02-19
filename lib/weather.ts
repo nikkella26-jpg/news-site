@@ -6,8 +6,19 @@ export async function fetchWeatherByLocation(
   // Encode the location to ensure the URL is valid
   const encodedLocation = encodeURIComponent(location);
 
+  const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL?.replace(
+    /\/+$/,
+    "",
+  );
+
+  if (!apiBaseUrl) {
+    throw new Error(
+      "Weather API URL is not configured in environment variables.",
+    );
+  }
+
   const response = await fetch(
-    `https://weather.lexlink.se/forecast/location/${encodedLocation}`,
+    `${apiBaseUrl}/forecast/location/${encodedLocation}`,
   );
 
   // Check if the response is not OK
