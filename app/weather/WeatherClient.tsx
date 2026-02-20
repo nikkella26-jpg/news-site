@@ -20,6 +20,7 @@ import { WeeklyForecastCard } from "@/components/WeeklyForecastCard";
 import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
 import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
 import { cn } from "@/lib/utils";
+import { fetchWeatherByLocation } from "@/lib/weather";
 
 type WeatherClientProps = {
   city: string;
@@ -100,21 +101,7 @@ export default function WeatherClient({
       setError(null);
 
       try {
-        const apiBaseUrl = (process.env.NEXT_PUBLIC_WEATHER_API_URL || "https://weather.lexlink.se").replace(/\/+$/, "");
-
-        const response = await fetch(
-          `${apiBaseUrl}/forecast/location/${encodeURIComponent(city)}`,
-          { signal: controller.signal }
-        );
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            throw new Error(`Location "${city}" not found`);
-          }
-          throw new Error("Failed to fetch weather data");
-        }
-
-        const data = await response.json();
+        const data = await fetchWeatherByLocation(city, { signal: controller.signal });
 
         if (!Array.isArray(data.timeseries)) {
           throw new Error("Unexpected weather data format");
