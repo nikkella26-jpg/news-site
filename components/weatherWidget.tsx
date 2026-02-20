@@ -69,12 +69,16 @@ export default function WeatherWidget() {
 
     async function fetchWeather() {
       try {
-        if (!process.env.NEXT_PUBLIC_WEATHER_API_URL) return;
+        const apiBaseUrl = (
+          process.env.NEXT_PUBLIC_WEATHER_API_URL || ""
+        ).replace(/\/+$/, "");
 
-        const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL.replace(
-          /\/+$/,
-          "",
-        );
+        if (!apiBaseUrl) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn("WeatherWidget: NEXT_PUBLIC_WEATHER_API_URL is not configured.");
+          }
+          return;
+        }
 
         const encodedLocation = encodeURIComponent(location);
 
@@ -116,6 +120,10 @@ export default function WeatherWidget() {
           city: location,
         });
       } catch (err) {
+        // Ignore expected aborts from cleanup (location change/unmount)
+        if (err instanceof DOMException && err.name === "AbortError") {
+          return;
+        }
         console.error(`WeatherWidget: Fetch failed for ${location}:`, err);
         // Intentionally silent — navbar widgets should never shout
       }
