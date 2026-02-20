@@ -15,6 +15,13 @@ const nextConfig = {
       { protocol: "https", hostname: "img.olympics.com" },
       { protocol: "https", hostname: "www.railwaypro.com" },
       { protocol: "https", hostname: "tse4.mm.bing.net" },
+      { protocol: "https", hostname: "img.freepik.com" },
+      { protocol: "https", hostname: "telforcegroup.com" },
+      { protocol: "https", hostname: "www.actualidadmotor.com" },
+      { protocol: "https", hostname: "cnsd.gov.hk" },
+      { protocol: "https", hostname: "heartland.org" },
+      { protocol: "https", hostname: "www.thegatewaypundit.com" },
+      { protocol: "https", hostname: "images.unsplash.com" },
     ],
   },
 };

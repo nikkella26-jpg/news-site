@@ -22,7 +22,7 @@ export default function ArticleCard({ article, imageSize }: ArticleCardProps) {
     <Link href={`/articles/${article.id}`}>
       <div className="border rounded p-4 hover:shadow cursor-pointer">
         <Image
-          src={article.image || "/placeholder-news.jpg"}
+          src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
           alt={article.title}
           width={imageWidth}
           height={imageHeight}

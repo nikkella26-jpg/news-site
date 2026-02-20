@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "../ui/button";
+import { authClient } from "@/lib/auth-client";
 
 export type Plan = {
   id: string;
@@ -9,7 +10,6 @@ export type Plan = {
   price: number;
   interval: "month" | "year";
   description?: string;
-  priceId?: string; // provided later when hooking up Stripe
 };
 
 export default function PriceCard({
@@ -19,26 +19,43 @@ export default function PriceCard({
   interval,
   description,
 }: Plan) {
+  const [loading, setLoading] = useState(false);
+
   const handleSubscribe = async () => {
-    // Placeholder: when to integrate Stripe, replace this with real checkout call
-    alert(`Start checkout for ${name} (${id}) — integrate Stripe here`);
+    try {
+      setLoading(true);
+
+      await authClient.subscription.upgrade({
+        plan: "basic",
+        annual: interval === "year",
+        successUrl: "http://localhost:3000/account",
+        cancelUrl: "http://localhost:3000/subscribe",
+        disableRedirect: false,
+      });
+    } catch (error) {
+      console.error("Subscription error:", error);
+      setLoading(false);
+    }
   };
 
   return (
     <div className="w-full max-w-md rounded-lg border bg-white p-6 shadow-sm">
       <div className="flex items-baseline justify-between">
-        <h3 className="text-lg font-semibold">{name}</h3>
+        <h3 className="text-lg font-semibold capitalize">{name}</h3>
+
         <div className="text-right">
           <div className="text-2xl font-bold">${price.toFixed(2)}</div>
           <div className="text-sm text-zinc-500">/ {interval}</div>
         </div>
       </div>
 
-      {description && <p className="mt-3 text-sm text-zinc-600">{description}</p>}
+      {description && (
+        <p className="mt-3 text-sm text-zinc-600">{description}</p>
+      )}
 
       <div className="mt-6">
-        <Button className="w-full" onClick={handleSubscribe}>
-          Subscribe
+        <Button className="w-full" onClick={handleSubscribe} disabled={loading}>
+          {loading ? "Redirecting..." : "Subscribe"}
         </Button>
       </div>
     </div>

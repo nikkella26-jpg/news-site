@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import { articles } from "@/data/articles";
+import prisma from "@/lib/prisma";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -10,9 +9,11 @@ interface CategoryPageProps {
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
 
-  const categoryArticles = articles.filter(
-    (a) => a.category?.toLowerCase() === slug.toLowerCase(),
-  );
+  const categoryArticles = await prisma.article.findMany({
+    where: { category: { name: slug } },
+    orderBy: { createdAt: "desc" },
+    include: { category: true, author: true },
+  });
 
   const categoryLabels: Record<string, string> = {
     world: "World News",
@@ -47,8 +48,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             >
               <div className="relative">
                 <Image
-                  src={article.image}
                   alt={article.title}
+                  src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
                   width={400} // Optimerad bredd för grid-layout
                   height={300} // Motsvarar h-36/aspect ratio
                   className="w-full h-48 object-cover" // Justerad till full bredd för bättre grid-estetik
