@@ -24,7 +24,7 @@ export default function AccountSubscriptionPage() {
     authClient.useSession();
 
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
-  const [interval, setInterval] = useState<StripeInterval>("unknown");
+  const [interval, setSubscriptionInterval] = useState<StripeInterval>("unknown");
   const [isLoading, setIsLoading] = useState(true);
   const hasSession = !!session;
 
