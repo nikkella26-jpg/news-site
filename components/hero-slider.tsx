@@ -21,7 +21,7 @@ export default function HeroSlider({ articles }: { articles: Article[] }) {
         <CarouselContent>
           {articles.map((article) => (
             <CarouselItem key={article.id}>
-              <Link href={`/articles/${article.id}`}>
+              <Link href={`/articles/${article.slug}`}>
                 <div className="relative w-full h-87.5 md:h-112.5 rounded-xl overflow-hidden cursor-pointer">
                   <Image
                     src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
