@@ -27,51 +27,16 @@ type WeatherClientProps = {
 };
 
 export default function WeatherClient({
-  city: initialCity,
+  city,
+  weekly,
+  timeSlots,
 }: WeatherClientProps) {
-  const [city, setCity] = useState(initialCity);
-  const [timeSlots, setTimeSlots] = useState<
-    ReturnType<typeof adaptWeatherToTimeSlots>
-  >([]);
-  const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>(
-    [],
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [locationResolved, setLocationResolved] = useState(false);
+  const [aiWeeklySummary, setAiWeeklySummary] = useState<string>("");
+  const [loadingAiSummary, setLoadingAiSummary] = useState(false);
+  const [lastFetchedCity, setLastFetchedCity] = useState<string>("");
 
-  // Resolve user's geolocation (if available)
+  // Generate AI weekly summary with debounce
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setLocationResolved(true);
-      return;
-    }
-
-    const timeout = setTimeout(() => setLocationResolved(true), 5000);
-
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        // TODO: Convert coordinates to city name if desired
-        // For now, just mark location as resolved and use initial city
-        setLocationResolved(true);
-        clearTimeout(timeout);
-      },
-      () => {
-        // Geolocation denied or error
-        setLocationResolved(true);
-        clearTimeout(timeout);
-      },
-    );
-
-    return () => clearTimeout(timeout);
-  }, []);
-
-  // Fetch weather only after location is resolved
-  useEffect(() => {
-    if (!locationResolved) {
-      return;
-    }
-
     const controller = new AbortController();
 
     // Debounce: Wait 1000ms before calling the AI
@@ -81,7 +46,16 @@ export default function WeatherClient({
         return;
       }
 
+      if (process.env.NODE_ENV === "development") {
+        console.log(`[AI Debounce] Triggering summary for ${city}...`);
+      }
 
+      setLoadingAiSummary(true);
+
+      try {
+        const result = await generateWeeklyWeatherSummary(city, weekly);
+
+        if (!controller.signal.aborted) {
           setAiWeeklySummary(result);
           setLastFetchedCity(city);
         }
@@ -96,10 +70,11 @@ export default function WeatherClient({
       }
     }, 1000);
 
-    fetchWeather();
-    return () => controller.abort();
-  }, [city, locationResolved]);
-
+    return () => {
+      clearTimeout(debounceTimer);
+      controller.abort();
+    };
+  }, [city, weekly]);
 
   if (timeSlots.length === 0) return null;
 
@@ -110,9 +85,8 @@ export default function WeatherClient({
         <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">
           Weather in {city}
         </h1>
-        <p className="mt-1 text-slate-600 dark:text-slate-400">Today’s forecast</p>
+        <p className="mt-1 text-slate-600 dark:text-slate-400">Today's forecast</p>
       </section>
-
 
       {/* Today – 4 time slots */}
       <section className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -123,7 +97,12 @@ export default function WeatherClient({
           >
             <div className="flex flex-col items-center text-center">
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{slot.slot}</p>
-              <span className="text-3xl mb-2" title={slot.condition}>
+              <span
+                className="text-3xl mb-2"
+                title={slot.condition}
+                role="img"
+                aria-label={`Weather condition: ${slot.condition.toLowerCase()}`}
+              >
                 {conditionIcon(slot.condition)}
               </span>
               <p className="text-xl font-bold text-slate-800 dark:text-slate-100">

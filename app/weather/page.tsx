@@ -8,8 +8,20 @@ import type { WeatherType } from "@/types/weather-types";
 
 const DEFAULT_CITY = "Stockholm";
 
+type NominatimAddress = {
+  city?: string;
+  town?: string;
+  village?: string;
+  municipality?: string;
+};
+
+type NominatimResponse = {
+  address?: NominatimAddress;
+};
+
 export default function WeatherPage() {
   const [city, setCity] = useState<string>(DEFAULT_CITY);
+  const [locationResolved, setLocationResolved] = useState(false);
   const [weatherData, setWeatherData] = useState<WeatherType | null>(null);
   const [timeSlots, setTimeSlots] = useState<AdaptedTimeSlot[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +30,7 @@ export default function WeatherPage() {
   // Detect user location and reverse geocode it
   useEffect(() => {
     if (!navigator.geolocation) {
-      setCity(DEFAULT_CITY);
+      setLocationResolved(true);
       return;
     }
 
@@ -29,29 +41,43 @@ export default function WeatherPage() {
           const nominatimApiUrl = process.env.NEXT_PUBLIC_NOMINATIM_API_URL || "https://nominatim.openstreetmap.org";
           const response = await fetch(
             `${nominatimApiUrl}/reverse?format=json&lat=${latitude}&lon=${longitude}`,
-            { headers: { "Accept-Language": "en" } }
+            { headers: { "Accept-Language": "en", "User-Agent": "WeatherApp/1.0" } }
           );
-          const data = await response.json();
-          const resolvedCity = data.address?.city || data.address?.town || data.address?.village || data.address?.municipality || DEFAULT_CITY;
+          if (!response.ok) {
+            throw new Error(`Nominatim request failed with status ${response.status}`);
+          }
+          const data: NominatimResponse = await response.json();
+          if (!data?.address || typeof data.address !== "object") {
+            throw new Error("Nominatim response does not contain a valid address object");
+          }
+          const { address } = data;
+          const resolvedCity =
+            address.city ||
+            address.town ||
+            address.village ||
+            address.municipality ||
+            DEFAULT_CITY;
           setCity(resolvedCity);
         } catch (err) {
           console.error("Reverse geocoding failed, falling back to Stockholm:", err);
-          setCity(DEFAULT_CITY);
+        } finally {
+          setLocationResolved(true);
         }
       },
       () => {
         // User denied or error occurred
-        setCity(DEFAULT_CITY);
+        setLocationResolved(true);
       }
     );
   }, []);
 
-  // Fetch weather data based on city
+  // Fetch weather data only after location is resolved to prevent double-fetch
   useEffect(() => {
+    if (!locationResolved) return;
+
     const controller = new AbortController();
 
     async function fetchWeatherData() {
-      // Don't fetch until we have a determined city (or if it's still Stockholm)
       setLoading(true);
       setError(null);
 
@@ -92,7 +118,7 @@ export default function WeatherPage() {
 
     fetchWeatherData();
     return () => controller.abort();
-  }, [city]);
+  }, [city, locationResolved]);
 
   const weekly = useMemo(() => {
     if (!weatherData?.timeseries) return [];
