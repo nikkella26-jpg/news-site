@@ -136,6 +136,7 @@ export default function Header() {
               accountPath="/account/subscription"
               variant="default"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                 forceAccountRedirect={true}
             />
           )}
 

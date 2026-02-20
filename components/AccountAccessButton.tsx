@@ -17,7 +17,8 @@ type Props = {
     noSub?: string; // default: "Subscribe"
   };
   size?: "sm" | "default" | "lg";
-  variant?: "default" | "secondary" | "outline";
+    variant?: "default" | "secondary" | "outline";
+  forceAccountRedirect?: boolean;
 };
 
 export default function AccountAccessButton({
@@ -27,7 +28,8 @@ export default function AccountAccessButton({
   loginPath = "/login",
   labelOverride,
   size = "sm",
-  variant = "default",
+    variant = "default",
+  forceAccountRedirect = false, 
 }: Props) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -74,21 +76,29 @@ export default function AccountAccessButton({
   }, [isPending, session, hasActiveSub, labelOverride]);
 
   const handleClick = () => {
-    if (isPending) return;
+  if (isPending) return;
 
-    if (!session) {
-      toast.error("Please login to subscribe");
-      router.push(loginPath);
-      return;
-    }
+  if (!session) {
+    toast.error("Please login to continue");
+    router.push(loginPath);
+    return;
+  }
 
-    if (hasActiveSub) {
-      router.push(accountPath);
-      return;
-    }
+  // ✅ If this is Account button, always go to account page
+  if (forceAccountRedirect) {
+    router.push(accountPath);
+    return;
+  }
 
-    router.push(subscribePath);
-  };
+  // ✅ Subscribe button behavior
+  if (hasActiveSub) {
+    router.push(accountPath);
+    return;
+  }
+
+  router.push(subscribePath);
+};
+
 
   return (
     <Button
