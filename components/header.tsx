@@ -7,11 +7,34 @@ import { authClient } from "@/lib/auth-client";
 import { LayoutDashboard, LogOut, FileText } from "lucide-react";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import AccountAccessButton from "@/components/AccountAccessButton";
+import { useEffect, useState } from "react";
 
 const categories = ["World", "Politics", "Tech", "Sports"];
 
 export default function Header() {
   const { data: session, isPending } = authClient.useSession();
+  const [hasActiveSub, setHasActiveSub] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      if (!session) {
+        setHasActiveSub(false);
+        return;
+      }
+
+      const { data } = await authClient.subscription.list();
+
+      const active = data?.some(
+        (s) => s?.status === "active" || s?.status === "trialing",
+      );
+
+      setHasActiveSub(!!active);
+    };
+
+    load();
+  }, [session]);
+
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -89,18 +112,36 @@ export default function Header() {
               </button>
             )
           )}
-          
-          <Link
-            href="/subscribe"
-            className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition text-sm"
-          >
-            Subscribe
-          </Link>
-          
+
+          {(!session || !hasActiveSub) && (
+            <AccountAccessButton
+              labelOverride={{
+                noSub: "Subscribe",
+                noSession: "Subscribe",
+              }}
+              subscribePath="/subscribe"
+              accountPath="/account/subscription"
+              variant="default"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+            />
+          )}
+
+          {session && (
+            <AccountAccessButton
+              labelOverride={{
+                noSub: "Account",
+                withSub: "Account",
+              }}
+              subscribePath="/subscribe"
+              accountPath="/account/subscription"
+              variant="default"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+            />
+          )}
+
           <ModeToggle />
         </div>
       </nav>
     </header>
   );
 }
-
