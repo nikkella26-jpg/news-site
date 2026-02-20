@@ -10,8 +10,28 @@ export default async function ArticleDetail({
 }) {
   const { id } = await params;
 
-  const article = await prisma.article.findUnique({ where: { id } });
-  if (!article) return <p>Not found</p>;
+  // Resolve article by ID or Slug
+  const article = await prisma.article.findFirst({
+    where: {
+      OR: [
+        { id: id },
+        { slug: id }
+      ]
+    },
+    include: {
+      author: true,
+      category: true,
+    }
+  });
+
+  if (!article) {
+    return (
+      <div className="py-20 text-center">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Article Not Found</h1>
+        <p className="text-slate-600">The article you're looking for doesn't exist or has been moved.</p>
+      </div>
+    );
+  }
 
   // Increment views and get updated count
   const updatedViews = await incrementView(id);

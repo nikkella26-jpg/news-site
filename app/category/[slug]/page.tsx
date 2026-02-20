@@ -68,7 +68,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 </p>
 
                 <Link
-                  href={`/articles/${article.id}`}
+                  href={`/articles/${article.slug}`}
                   className="mt-auto text-blue-600 dark:text-blue-400 font-semibold hover:underline"
                 >
                   Read More →

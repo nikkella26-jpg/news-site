@@ -30,7 +30,7 @@ export default async function ArticlesPage() {
           {articles.map((article) => (
             <Link
               key={article.id}
-              href={`/articles/${article.id}`}
+              href={`/articles/${article.slug}`}
               className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col border border-slate-100"
             >
               {/* Image Container */}

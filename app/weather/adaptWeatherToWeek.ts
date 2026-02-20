@@ -12,19 +12,30 @@ export type AdaptedDailyWeather = {
 export function adaptWeatherToWeek(
   rawHours: TimeSeries[],
 ): AdaptedDailyWeather[] {
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const date = now.getDate();
 
   const days = new Map<string, { timestamp: number; entries: TimeSeries[] }>();
 
   for (const hour of rawHours) {
-    const date = new Date(hour.validTime);
-    const isoDate = date.toISOString().slice(0, 10);
+    const entryDate = new Date(hour.validTime);
 
-    if (isoDate === todayIso) continue;
+    // Skip today in the weekly forecast (it's handled by timeSlots)
+    if (
+      entryDate.getFullYear() === year &&
+      entryDate.getMonth() === month &&
+      entryDate.getDate() === date
+    ) {
+      continue;
+    }
+
+    const isoDate = entryDate.toISOString().slice(0, 10);
 
     if (!days.has(isoDate)) {
       days.set(isoDate, {
-        timestamp: date.getTime(),
+        timestamp: entryDate.getTime(),
         entries: [],
       });
     }

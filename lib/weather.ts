@@ -2,12 +2,17 @@ import { WeatherType } from "@/types/weather-types";
 
 export async function fetchWeatherByLocation(
   location: string,
+  options?: RequestInit,
 ): Promise<WeatherType> {
-  // Encode the location to ensure the URL is valid
+  const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL?.replace(/\/+$/, "") || "";
+  if (!apiBaseUrl) {
+    throw new Error("NEXT_PUBLIC_WEATHER_API_URL is not defined");
+  }
   const encodedLocation = encodeURIComponent(location);
 
   const response = await fetch(
-    `https://weather.lexlink.se/forecast/location/${encodedLocation}`,
+    `${apiBaseUrl}/forecast/location/${encodedLocation}`,
+    options
   );
 
   // Check if the response is not OK

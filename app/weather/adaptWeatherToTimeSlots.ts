@@ -4,18 +4,29 @@ export type TimeSlot = "00-06" | "06-12" | "12-18" | "18-24";
 
 export type AdaptedTimeSlot = {
   slot: TimeSlot;
-  avgTemp: number;
+  avgTemp: number | null;
   condition: string;
+  isPast?: boolean;
 };
 
 export function adaptWeatherToTimeSlots(
   timeseries: TimeSeries[],
 ): AdaptedTimeSlot[] {
-  const todayIso = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const day = now.getDate();
+  const currentHour = now.getHours();
 
-  const todaysEntries = timeseries.filter(
-    (entry) => entry.validTime.slice(0, 10) === todayIso,
-  );
+  // Filter entries that match the LOCAL today's date
+  const todaysEntries = timeseries.filter((entry) => {
+    const entryDate = new Date(entry.validTime);
+    return (
+      entryDate.getFullYear() === year &&
+      entryDate.getMonth() === month &&
+      entryDate.getDate() === day
+    );
+  });
 
   const slotMap: Record<TimeSlot, TimeSeries[]> = {
     "00-06": [],
@@ -25,7 +36,8 @@ export function adaptWeatherToTimeSlots(
   };
 
   todaysEntries.forEach((entry) => {
-    const hour = new Date(entry.validTime).getHours();
+    const entryDate = new Date(entry.validTime);
+    const hour = entryDate.getHours();
 
     if (hour < 6) slotMap["00-06"].push(entry);
     else if (hour < 12) slotMap["06-12"].push(entry);
@@ -33,32 +45,46 @@ export function adaptWeatherToTimeSlots(
     else slotMap["18-24"].push(entry);
   });
 
-  return (Object.keys(slotMap) as TimeSlot[])
-    .map((slot) => {
-      const entries = slotMap[slot];
-      if (entries.length === 0) return null;
+  const slotsOrder: TimeSlot[] = ["00-06", "06-12", "12-18", "18-24"];
 
-      const avgTemp =
-        entries.reduce((sum, e) => sum + e.temp, 0) / entries.length;
+  return slotsOrder.map((slot) => {
+    const entries = slotMap[slot];
 
-      const conditionCount = new Map<string, number>();
+    // Determine if this slot is in the past
+    // A slot is "past" if its end hour is less than or equal to current hour
+    const slotEndHour = parseInt(slot.split("-")[1], 10);
+    const isPast = slotEndHour <= currentHour;
 
-      entries.forEach((e) => {
-        const current = conditionCount.get(e.summary) ?? 0;
-        conditionCount.set(e.summary, current + 1);
-      });
-
-      const sortedConditions = [...conditionCount.entries()].sort(
-        (a, b) => b[1] - a[1],
-      );
-
-      const condition = sortedConditions[0]?.[0] ?? "Unknown";
-
+    if (entries.length === 0) {
       return {
         slot,
-        avgTemp: Math.round(avgTemp),
-        condition,
+        avgTemp: null,
+        condition: isPast ? "Past" : "No data",
+        isPast,
       };
-    })
-    .filter(Boolean) as AdaptedTimeSlot[];
+    }
+
+    const avgTemp =
+      entries.reduce((sum, e) => sum + e.temp, 0) / entries.length;
+
+    const conditionCount = new Map<string, number>();
+
+    entries.forEach((e) => {
+      const current = conditionCount.get(e.summary) ?? 0;
+      conditionCount.set(e.summary, current + 1);
+    });
+
+    const sortedConditions = [...conditionCount.entries()].sort(
+      (a, b) => b[1] - a[1],
+    );
+
+    const condition = sortedConditions[0]?.[0] ?? "Unknown";
+
+    return {
+      slot,
+      avgTemp: Math.round(avgTemp),
+      condition,
+      isPast,
+    };
+  });
 }
