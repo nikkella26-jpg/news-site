@@ -3,7 +3,7 @@
 import CookieConsent from "react-cookie-consent";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-
+import Link from "next/link";
 
 export const CookieConsentBanner = () => {
   const [visible, setVisible] = useState(true);
@@ -29,28 +29,18 @@ export const CookieConsentBanner = () => {
       onDecline={handleDecline}
       buttonText=""
       hideOnAccept={false}
-
     >
       <span className="flex-1">
-        We use cookies to enhance the news site experience.
-        Read all about it in{" "}
+        We use cookies to enhance the news site experience. Read all about it in{" "}
         <Link href="/privacy" className="underline hover:text-primary">
           Privacy Policy
         </Link>.
       </span>
       <div className="flex gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleDecline}
-        >
+        <Button variant="outline" size="sm" onClick={handleDecline}>
           Deny
         </Button>
-        <Button
-          variant="default"
-          size="sm"
-          onClick={handleAccept}
-        >
+        <Button variant="default" size="sm" onClick={handleAccept}>
           Accept
         </Button>
       </div>
