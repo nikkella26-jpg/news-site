@@ -5,17 +5,17 @@ import PriceCard, { Plan } from "./PriceCard";
 
 const PLANS: Plan[] = [
   {
-    id: "basic",
-    name: "Basic",
-    price: 4.99,
+    id: "basic-monthly",
+    name: "basic",
+    price: 99,
     interval: "month",
     description: "Access to standard articles and newsletters.",
   },
   {
-    id: "premium",
-    name: "Premium",
-    price: 9.99,
-    interval: "month",
+    id: "basic-yearly",
+    name: "basic",
+    price: 899,
+    interval: "year",
     description: "Full access to archives, exclusive content, and no ads.",
   },
 ];
@@ -23,14 +23,14 @@ const PLANS: Plan[] = [
 export default function PlansList() {
   return (
     <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-      {PLANS.map((p) => (
+      {PLANS.map((plan, index) => (
         <PriceCard
-          key={p.id}
-          id={p.id}
-          name={p.name}
-          price={p.price}
-          interval={p.interval}
-          description={p.description}
+          id={plan.id}
+          key={index}
+          name={plan.name}
+          price={plan.price}
+          interval={plan.interval}
+          description={plan.description}
         />
       ))}
     </div>

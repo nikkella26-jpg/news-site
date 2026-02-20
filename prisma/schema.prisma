@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "../lib/generated/prisma"
 }
 
@@ -20,28 +20,29 @@ enum Role {
 }
 
 model User {
-  id            String   @id @default(uuid())
+  id            String        @id @default(uuid())
   name          String
-  email         String   @unique
+  email         String        @unique
   password      String?
   role          String
-  emailVerified Boolean? @default(false)
+  emailVerified Boolean?       @default(false)
   image         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  newsletterSubscribed Boolean @default(false)
+
 
   sessions Session[]
   accounts Account[]
-  // Existing fields from previous schema kept for safety if needed, 
-  // but logically "banned" etc. were not in the new prompt. 
-  // keeping them optional to not break valid data if present.
+  
 
-  banned           Boolean?       @default(false)
-  banReason        String?
-  banExpires       DateTime?
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
+  articles Article[]
+
   stripeCustomerId String?
-  subscriptions    Subscription[]
-  articles         Article[]
 
   @@map("user")
 }
@@ -103,45 +104,6 @@ model Category {
   @@map("category")
 }
 
-model SubscriptionType {
-  id            String         @id @default(uuid())
-  name          String         @unique
-  description   String
-  price         Float
-  subscriptions Subscription[]
-
-  @@map("subscription_type")
-}
-
-model Subscription {
-  id        String    @id @default(uuid())
-  status    String
-  createdAt DateTime  @default(now())
-  expiresAt DateTime?
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  subscriptionTypeId String
-  subscriptionType   SubscriptionType @relation(fields: [subscriptionTypeId], references: [id])
-
-  // Keeping stripe fields as optional to facilitate potential migration/fallback
-  stripeCustomerId     String?
-  stripeSubscriptionId String?
-  periodStart          DateTime?
-  periodEnd            DateTime?
-  trialStart           DateTime?
-  trialEnd             DateTime?
-  cancelAtPeriodEnd    Boolean?  @default(false)
-  cancelAt             DateTime?
-  canceledAt           DateTime?
-  endedAt              DateTime?
-  seats                Int?
-
-  @@index([userId])
-  @@map("subscription")
-}
-
 model Article {
   id              String  @id @default(uuid())
   title           String
@@ -161,4 +123,24 @@ model Article {
   category   Category? @relation(fields: [categoryId], references: [id])
 
   @@map("article")
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?   @default("incomplete")
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  trialStart           DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean?  @default(false)
+  cancelAt             DateTime?
+  canceledAt           DateTime?
+  endedAt              DateTime?
+  seats                Int?
+
+  @@map("subscription")
 }
