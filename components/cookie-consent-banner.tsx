@@ -4,6 +4,7 @@ import CookieConsent from "react-cookie-consent";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 
+
 export const CookieConsentBanner = () => {
   const [visible, setVisible] = useState(true);
 
@@ -33,9 +34,9 @@ export const CookieConsentBanner = () => {
       <span className="flex-1">
         We use cookies to enhance the news site experience.
         Read all about it in{" "}
-        <a href="/privacy-policy" className="underline hover:text-primary">
-          Integrity policy
-        </a>.
+        <Link href="/privacy" className="underline hover:text-primary">
+          Privacy Policy
+        </Link>.
       </span>
       <div className="flex gap-2">
         <Button
