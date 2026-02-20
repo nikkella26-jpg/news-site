@@ -38,12 +38,12 @@ export default async function ArticleDetail({ params }: PageProps) {
     return notFound();
   }
 
-  // 4. Om de använde ID i URL:en, redirecta till den snygga slug-URL:en
+  // 5. Om de använde ID i URL:en, redirecta till den snygga slug-URL:en
   if (rawSlug === article.id) {
     return redirect(`/articles/${article.slug}`);
   }
 
-  // 5. Uppdatera visningar
+  // 6. Uppdatera visningar
   const updatedViews = await incrementView(article.id);
 
   return (
