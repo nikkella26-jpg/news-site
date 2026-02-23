@@ -3,6 +3,12 @@ import Image from "next/image";
 import { prisma } from "@/lib/prisma";
 import ArticleCard from "@/components/article-card";
 import HeroSlider from "@/components/hero-slider";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Nordic Express | Your Gateway to Northern Journalism",
+  description: "The latest headlines and deep analysis from across the Nordic region. Experience news with a premium perspective.",
+};
 
 export default async function LandingPage() {
   const articles = await prisma.article.findMany({
@@ -22,7 +28,7 @@ export default async function LandingPage() {
 
       <section className="py-10">
         <Link href="/top-stories">
-          <h1 className="text-blue-600 text-4xl font-bold cursor-pointer">
+          <h1 className="text-blue-600 text-3xl md:text-4xl font-bold cursor-pointer">
             Top Stories
           </h1>
         </Link>

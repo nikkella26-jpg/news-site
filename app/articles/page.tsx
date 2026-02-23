@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 export default async function ArticlesPage() {
   const articles = await prisma.article.findMany({
     orderBy: { createdAt: "desc" },
+    take: 9, // Limit for performance
     include: {
       category: true,
       author: true,
@@ -15,11 +16,11 @@ export default async function ArticlesPage() {
     <main className="min-h-screen bg-slate-50/50">
       {/* Header Section */}
       <div className="bg-white border-b">
-        <div className="max-w-6xl mx-auto px-4 py-16 text-center">
-          <h1 className="text-5xl font-black tracking-tight text-slate-900 mb-4">
-            The News <span className="text-blue-600">Feed</span>
+        <div className="max-w-6xl mx-auto px-4 py-10 md:py-16 text-center">
+          <h1 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900 mb-4 uppercase">
+            The News <span className="text-cyan-600">Feed</span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-sm md:text-lg text-slate-600 max-w-2xl mx-auto">
             Stay updated with the latest stories from around the world, curated by our editors.
           </p>
         </div>
@@ -27,19 +28,21 @@ export default async function ArticlesPage() {
 
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {articles.map((article) => (
+          {articles.map((article, index) => (
             <Link
               key={article.id}
               href={`/articles/${article.slug}`}
               className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col border border-slate-100"
             >
               {/* Image Container */}
-              <div className="relative w-full h-56 overflow-hidden">
+              <div className="relative w-full h-56 overflow-hidden bg-muted">
                 <Image
                   src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   alt={article.image ? article.title : "No picture available"}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  priority={index < 3}
                 />
                 {article.category && (
                   <div className="absolute top-4 left-4">

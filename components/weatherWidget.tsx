@@ -23,11 +23,14 @@ const conditionIcon = (summary: string) => {
   return "🌤️";
 };
 
-export default function WeatherWidget() {
-  const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
-  const city = "Linköping";
+export default function WeatherWidget({ initialData }: { initialData?: WeatherSnapshot }) {
+  const [weather, setWeather] = useState<WeatherSnapshot | null>(initialData || null);
+  const city = initialData?.city || "Stockholm";
 
   useEffect(() => {
+    // If we have initialData and it's for the current city, skip initial fetch
+    if (initialData && initialData.city === city) return;
+
     const controller = new AbortController();
 
     async function fetchWeather() {
@@ -75,7 +78,7 @@ export default function WeatherWidget() {
 
     fetchWeather();
     return () => controller.abort();
-  }, [city]);
+  }, [city, initialData]);
 
   if (!weather) return null;
 
@@ -94,7 +97,7 @@ export default function WeatherWidget() {
         aria-label="View detailed weather forecast"
       >
         <span>
-          {city}: {conditionIcon(weather.summary)}
+          {weather.city}: {conditionIcon(weather.summary)}
         </span>
         <span className="font-medium">{weather.temp}°C</span>
       </Link>

@@ -92,9 +92,9 @@ export default async function ArticleDetail({
       </div>
 
       <div className="mt-20 pt-10 border-t border-border flex justify-center">
-        <div className="flex gap-4">
-          <button className="px-8 py-3 bg-foreground text-background rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">Share Story</button>
-          <button className="px-8 py-3 border border-border rounded-full font-black text-xs uppercase tracking-widest hover:bg-muted transition-colors">Bookmark</button>
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+          <button className="px-8 py-3 bg-foreground text-background rounded-full font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform w-full sm:w-auto">Share Story</button>
+          <button className="px-8 py-3 border border-border rounded-full font-black text-xs uppercase tracking-widest hover:bg-muted transition-colors w-full sm:w-auto">Bookmark</button>
         </div>
       </div>
     </article>
