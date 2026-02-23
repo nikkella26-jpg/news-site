@@ -5,21 +5,31 @@ export type TimeSlot = "00-06" | "06-12" | "12-18" | "18-24";
 export type AdaptedTimeSlot = {
   slot: TimeSlot;
   avgTemp: number | null;
+  minTemp: number | null;
+  maxTemp: number | null;
   condition: string;
   isPast?: boolean;
 };
 
 export function adaptWeatherToTimeSlots(
   timeseries: TimeSeries[],
+  targetDate?: Date
 ): AdaptedTimeSlot[] {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const day = now.getDate();
+  const target = targetDate || now;
+  const year = target.getFullYear();
+  const month = target.getMonth();
+  const day = target.getDate();
+
+  const isTargetToday = target.getFullYear() === now.getFullYear() &&
+    target.getMonth() === now.getMonth() &&
+    target.getDate() === now.getDate();
+  const isTargetPast = !isTargetToday && target < now;
+
   const currentHour = now.getHours();
 
-  // Filter entries that match the LOCAL today's date
-  const todaysEntries = timeseries.filter((entry) => {
+  // Filter entries that match the LOCAL target date
+  const filteredEntries = timeseries.filter((entry) => {
     const entryDate = new Date(entry.validTime);
     return (
       entryDate.getFullYear() === year &&
@@ -35,7 +45,7 @@ export function adaptWeatherToTimeSlots(
     "18-24": [],
   };
 
-  todaysEntries.forEach((entry) => {
+  filteredEntries.forEach((entry) => {
     const entryDate = new Date(entry.validTime);
     const hour = entryDate.getHours();
 
@@ -51,21 +61,24 @@ export function adaptWeatherToTimeSlots(
     const entries = slotMap[slot];
 
     // Determine if this slot is in the past
-    // A slot is "past" if its end hour is less than or equal to current hour
     const slotEndHour = parseInt(slot.split("-")[1], 10);
-    const isPast = slotEndHour <= currentHour;
+    const isPast = isTargetPast || (isTargetToday && slotEndHour <= currentHour);
 
     if (entries.length === 0) {
       return {
         slot,
         avgTemp: null,
+        minTemp: null,
+        maxTemp: null,
         condition: isPast ? "Past" : "No data",
         isPast,
       };
     }
 
-    const avgTemp =
-      entries.reduce((sum, e) => sum + e.temp, 0) / entries.length;
+    const temps = entries.map(e => e.temp);
+    const avgTemp = temps.reduce((sum, t) => sum + t, 0) / temps.length;
+    const minTemp = Math.min(...temps);
+    const maxTemp = Math.max(...temps);
 
     const conditionCount = new Map<string, number>();
 
@@ -83,6 +96,8 @@ export function adaptWeatherToTimeSlots(
     return {
       slot,
       avgTemp: Math.round(avgTemp),
+      minTemp: Math.round(minTemp),
+      maxTemp: Math.round(maxTemp),
       condition,
       isPast,
     };

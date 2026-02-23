@@ -14,13 +14,18 @@ import {
   Droplets,
   Thermometer,
   MapPin,
-  CalendarDays
+  CalendarDays,
+  ArrowUp,
+  ArrowDown,
+  AlertTriangle
 } from "lucide-react";
 import { WeeklyForecastCard } from "@/components/WeeklyForecastCard";
 import { adaptWeatherToTimeSlots } from "./adaptWeatherToTimeSlots";
 import { adaptWeatherToWeek } from "./adaptWeatherToWeek";
 import { cn } from "@/lib/utils";
 import { fetchWeatherByLocation } from "@/lib/weather";
+import type { TimeSeries } from "@/types/weather-types";
+import { simulateSnowStormAlert } from "@/actions/alert-simulation";
 
 type WeatherClientProps = {
   city: string;
@@ -53,11 +58,28 @@ export default function WeatherClient({
   city: initialCity,
 }: WeatherClientProps) {
   const [city, setCity] = useState(initialCity);
-  const [timeSlots, setTimeSlots] = useState<ReturnType<typeof adaptWeatherToTimeSlots>>([]);
+  const [rawData, setRawData] = useState<TimeSeries[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>([]);
+  const [currentWeather, setCurrentWeather] = useState<TimeSeries | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [locationResolved, setLocationResolved] = useState(false);
+  const [unit, setUnit] = useState<'C' | 'F'>('C');
+
+  const formatTemp = (temp: number | null) => {
+    if (temp === null) return null;
+    if (unit === 'C') return Math.round(temp);
+    return Math.round((temp * 9 / 5) + 32);
+  };
+
+  const toggleUnit = () => setUnit(prev => prev === 'C' ? 'F' : 'C');
+
+  // Derived time slots based on selected date
+  const timeSlots = useMemo(() => {
+    if (!rawData || rawData.length === 0) return [];
+    return adaptWeatherToTimeSlots(rawData, selectedDate);
+  }, [rawData, selectedDate]);
 
   // Sync with prop changes
   useEffect(() => {
@@ -75,8 +97,6 @@ export default function WeatherClient({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        // In a real app, we might reverse geocode here.
-        // For this demo, we'll keep the city but mark as resolved.
         setLocationResolved(true);
         clearTimeout(timeout);
       },
@@ -90,7 +110,7 @@ export default function WeatherClient({
     return () => clearTimeout(timeout);
   }, []);
 
-  // Fetch weather only after location is resolved
+  // Fetch weather
   useEffect(() => {
     if (!locationResolved) return;
 
@@ -101,14 +121,55 @@ export default function WeatherClient({
       setError(null);
 
       try {
+        const cacheKey = `weather_full_${city}`;
+        const { clientCache } = await import("@/lib/cache");
+        const cachedData = clientCache.get(cacheKey);
+
+        if (cachedData && Array.isArray(cachedData.rawData)) {
+          setRawData(cachedData.rawData);
+          setWeekly(adaptWeatherToWeek(cachedData.rawData));
+          setCurrentWeather(cachedData.currentWeather);
+          setLoading(false);
+          return;
+        }
+
         const data = await fetchWeatherByLocation(city, { signal: controller.signal });
 
         if (!Array.isArray(data.timeseries)) {
           throw new Error("Unexpected weather data format");
         }
 
-        setTimeSlots(adaptWeatherToTimeSlots(data.timeseries));
-        setWeekly(adaptWeatherToWeek(data.timeseries));
+        const now = new Date();
+        const currentWeather = data.timeseries.reduce((prev, curr) => {
+          const prevDiff = Math.abs(new Date(prev.validTime).getTime() - now.getTime());
+          const currDiff = Math.abs(new Date(curr.validTime).getTime() - now.getTime());
+          return currDiff < prevDiff ? curr : prev;
+        });
+
+        const newWeekly = adaptWeatherToWeek(data.timeseries);
+
+        setRawData(data.timeseries);
+        setWeekly(newWeekly);
+        setCurrentWeather(currentWeather);
+
+        clientCache.set(cacheKey, {
+          rawData: data.timeseries,
+          weekly: newWeekly,
+          currentWeather
+        }, 3);
+
+        // --- AUTOMATIC HAZARD DETECTION ---
+        // If current weather indicates a extremely dangerous storm or blizzard
+        const hazardCondition = currentWeather.summary.toLowerCase();
+        const isHazardous =
+          hazardCondition.includes("storm") ||
+          hazardCondition.includes("blizzard") ||
+          hazardCondition.includes("heavy snow");
+
+        if (isHazardous) {
+          console.log("[HAZARD DETECTED] Automatically activating site-wide emergency alert.");
+          await simulateSnowStormAlert();
+        }
       } catch (err) {
         if (err instanceof Error && err.name !== "AbortError") {
           setError(err.message);
@@ -171,9 +232,10 @@ export default function WeatherClient({
     <div className="max-w-5xl mx-auto px-4 pb-24 animate-in fade-in duration-700">
       {/* Header & Current Status Card */}
       <section className="pt-8 pb-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-          <div>
-            <div className="flex items-center gap-2 text-cyan-500 font-medium mb-1">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
+          {/* Left: Location */}
+          <div className="flex-1 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2 text-cyan-500 font-medium mb-1">
               <MapPin className="w-4 h-4" />
               <span className="tracking-wide uppercase text-xs font-bold">Current Location</span>
             </div>
@@ -181,72 +243,88 @@ export default function WeatherClient({
               {city}
             </h1>
           </div>
-          <div className="text-muted-foreground font-bold flex items-center gap-2 bg-muted/50 px-4 py-2 rounded-2xl border border-border/50">
-            <CalendarDays className="w-5 h-5" />
-            {new Date().toLocaleDateString("en-US", { weekday: 'long', month: 'long', day: 'numeric' })}
+
+          {/* Center: Unit Toggle */}
+          <div className="flex items-center justify-center">
+            <button
+              onClick={toggleUnit}
+              className="group relative flex items-center gap-1 bg-muted/30 hover:bg-muted/50 border border-border/50 p-1.5 rounded-2xl transition-all duration-300"
+            >
+              <div className={cn(
+                "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300",
+                unit === 'C' ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30" : "text-muted-foreground"
+              )}>°C</div>
+              <div className={cn(
+                "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300",
+                unit === 'F' ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30" : "text-muted-foreground"
+              )}>°F</div>
+            </button>
+          </div>
+
+          {/* Right: Date */}
+          <div className="flex-1 flex justify-center md:justify-end">
+            <div className="text-muted-foreground font-bold flex items-center gap-2 bg-muted/50 px-5 py-2.5 rounded-2xl border border-border/50 whitespace-nowrap shadow-sm">
+              <CalendarDays className="w-5 h-5 text-cyan-500/70" />
+              {new Date().toLocaleDateString("en-US", { weekday: 'long', month: 'long', day: 'numeric' })}
+            </div>
           </div>
         </div>
 
         {/* Highlight Card */}
-        {(() => {
-          const currentHour = new Date().getHours();
-          // Find the most relevant current or future slot
-          let currentSlotIndex = -1;
-          if (currentHour >= 18) currentSlotIndex = timeSlots.findIndex(s => s.slot === "18-24" && s.avgTemp !== null);
-          else if (currentHour >= 12) currentSlotIndex = timeSlots.findIndex(s => s.slot === "12-18" && s.avgTemp !== null);
-          else if (currentHour >= 6) currentSlotIndex = timeSlots.findIndex(s => s.slot === "06-12" && s.avgTemp !== null);
-          else currentSlotIndex = timeSlots.findIndex(s => s.slot === "00-06" && s.avgTemp !== null);
+        {currentWeather && (
+          <div className="relative overflow-hidden rounded-[2.5rem] bg-indigo-600 p-8 md:p-12 text-white shadow-2xl shadow-indigo-200 group">
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors duration-700" />
+            <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl" />
 
-          // Fallback to first available non-null slot if current is missing
-          const highlightSlot = currentSlotIndex !== -1
-            ? timeSlots[currentSlotIndex]
-            : timeSlots.find(s => s.avgTemp !== null) || timeSlots[0];
-
-          if (!highlightSlot) return null;
-
-          return (
-            <div className="relative overflow-hidden rounded-[2.5rem] bg-indigo-600 p-8 md:p-12 text-white shadow-2xl shadow-indigo-200 group">
-              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-white/10 rounded-full blur-3xl group-hover:bg-white/20 transition-colors duration-700" />
-              <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl" />
-
-              <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
-                <div className="flex-1">
-                  <div className="flex items-center justify-center md:justify-start gap-2 text-indigo-200 mb-4 bg-white/10 w-fit px-4 py-1 rounded-full mx-auto md:mx-0">
-                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Live Forecast: {getSlotLabel(highlightSlot.slot)}</span>
-                  </div>
-                  <p className="text-indigo-100 font-medium mb-2">Expect {highlightSlot.condition.toLowerCase()} right now</p>
-                  <div className="text-7xl md:text-8xl font-black">{highlightSlot.avgTemp}°</div>
-                  <p className="text-xl md:text-2xl text-indigo-100 font-medium mt-2">{highlightSlot.condition}</p>
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+              <div className="flex-1">
+                <div className="flex items-center justify-center md:justify-start gap-2 text-indigo-200 mb-4 bg-white/10 w-fit px-4 py-1 rounded-full mx-auto md:mx-0">
+                  <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Live Forecast: Now</span>
                 </div>
+                <p className="text-indigo-100 font-medium mb-2">Expect {currentWeather.summary.toLowerCase()} right now</p>
+                <div className="text-7xl md:text-8xl font-black">{formatTemp(currentWeather.temp)}°</div>
+                <p className="text-xl md:text-2xl text-indigo-100 font-medium mt-2">{currentWeather.summary}</p>
+              </div>
 
-                <div className="flex flex-wrap justify-center gap-6 md:gap-12 p-6 rounded-3xl bg-black/10 backdrop-blur-md border border-white/10">
-                  <div className="flex flex-col items-center">
-                    <Thermometer className="w-6 h-6 text-indigo-200 mb-2" />
-                    <span className="text-sm text-indigo-100">Temp</span>
-                    <span className="font-bold">{highlightSlot.avgTemp}°C</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <Droplets className="w-6 h-6 text-indigo-200 mb-2" />
-                    <span className="text-sm text-indigo-100">Humidity</span>
-                    <span className="font-bold">64%</span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <Wind className="w-6 h-6 text-indigo-200 mb-2" />
-                    <span className="text-sm text-indigo-100">Wind</span>
-                    <span className="font-bold">12km/h</span>
-                  </div>
+              <div className="flex flex-wrap justify-center gap-6 md:gap-12 p-6 rounded-3xl bg-black/10 backdrop-blur-md border border-white/10">
+                <div className="flex flex-col items-center">
+                  <Thermometer className="w-6 h-6 text-indigo-200 mb-2" />
+                  <span className="text-sm text-indigo-100">Temp</span>
+                  <span className="font-bold">{formatTemp(currentWeather.temp)}°{unit}</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Droplets className="w-6 h-6 text-indigo-200 mb-2" />
+                  <span className="text-sm text-indigo-100">Humidity</span>
+                  <span className="font-bold">{currentWeather.humidity}%</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <Wind className="w-6 h-6 text-indigo-200 mb-2" />
+                  <span className="text-sm text-indigo-100">Wind</span>
+                  <span className="font-bold">{Math.round(currentWeather.windSpeed)}km/h</span>
                 </div>
               </div>
             </div>
-          );
-        })()}
+          </div>
+        )}
       </section>
 
-      {/* Today's Timeline */}
+      {/* Timeline Section */}
       <section className="mb-12">
-        <h2 className="text-xl font-black text-foreground mb-6 flex items-center gap-2">
-          Today's Forecast
+        <h2 className="text-xl font-black text-foreground mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            {selectedDate.toLocaleDateString() === new Date().toLocaleDateString()
+              ? "Today's Forecast"
+              : `${selectedDate.toLocaleDateString("en-US", { weekday: 'long' })}'s Forecast`}
+          </div>
+          {selectedDate.toLocaleDateString() !== new Date().toLocaleDateString() && (
+            <button
+              onClick={() => setSelectedDate(new Date())}
+              className="text-xs bg-muted hover:bg-border px-3 py-1 rounded-full transition-colors"
+            >
+              Reset to Today
+            </button>
+          )}
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {timeSlots.map((slot) => (
@@ -261,8 +339,19 @@ export default function WeatherClient({
               <div className="relative z-10">
                 <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">{getSlotLabel(slot.slot)}</p>
                 <div className="mb-4">{getWeatherIcon(slot.condition)}</div>
-                <div className="text-3xl font-black text-foreground mb-1">
-                  {slot.avgTemp !== null ? `${slot.avgTemp}°` : "—"}
+                <div className="flex flex-col gap-1 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <ArrowUp className="w-3.5 h-3.5 text-rose-500/70" />
+                    <span className="text-2xl font-black text-foreground">
+                      {slot.maxTemp !== null ? `${formatTemp(slot.maxTemp)}°` : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 contrast-75">
+                    <ArrowDown className="w-3.5 h-3.5 text-sky-500/70" />
+                    <span className="text-lg font-bold text-muted-foreground/60">
+                      {slot.minTemp !== null ? `${formatTemp(slot.minTemp)}°` : ""}
+                    </span>
+                  </div>
                 </div>
                 <p className="text-sm text-muted-foreground font-bold truncate">{slot.condition}</p>
               </div>
@@ -286,23 +375,17 @@ export default function WeatherClient({
             <div key={index} className="contents group">
               <WeeklyForecastCard
                 dayLabel={day.dayLabel}
-                minTemp={day.minTemp}
-                maxTemp={day.maxTemp}
+                minTemp={formatTemp(day.minTemp) as number}
+                maxTemp={formatTemp(day.maxTemp) as number}
                 condition={day.condition}
+                isActive={selectedDate.toISOString().slice(0, 10) === day.date}
+                onClick={() => setSelectedDate(new Date(day.date))}
               />
             </div>
           ))}
         </div>
       </section>
 
-      {/* Footer Info */}
-      <div className="mt-16 pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between text-muted-foreground text-[10px] font-bold uppercase tracking-widest gap-4">
-        <p>© 2026 WeatherInsights • Data updated every hour</p>
-        <div className="flex gap-6">
-          <button className="hover:text-foreground transition">Temperature Unit: °C</button>
-          <button className="hover:text-foreground transition">Privacy Policy</button>
-        </div>
-      </div>
     </div>
   );
 }

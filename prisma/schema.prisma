@@ -142,3 +142,17 @@ model Subscription {
 
   @@map("subscription")
 }
+
+model EmergencyAlert {
+  id        String    @id @default(uuid())
+  title     String
+  message   String
+  severity  String    @default("info") // info, warning, severe
+  isActive  Boolean   @default(true)
+  expiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("emergency_alert")
+}

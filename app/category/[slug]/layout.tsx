@@ -21,20 +21,15 @@ export default async function CategoryLayout({
   const title = categoryLabels[slug] ?? slug;
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-blue-800 text-white p-4">
-        <h1 className="text-2xl font-bold">Category: {title}</h1>
-      </header>
+    <div className="py-10">
+      <div className="mb-10 pb-6 border-b border-border/50">
+        <h1 className="text-5xl font-black text-foreground tracking-tight">
+          {title} News
+        </h1>
+        <div className="h-1.5 w-16 bg-primary mt-4 rounded-full" />
+      </div>
 
-      <main className="grow container mx-auto p-6">{children}</main>
-
-      <footer
-        className="bg-gray-200 text-center p-4 
-                   text-slate-900 
-                   dark:bg-slate-900 dark:text-slate-100"
-      >
-        <p>© 2026 The News Site - The Crucible Coders</p>
-      </footer>
+      <div className="w-full">{children}</div>
     </div>
   );
 }

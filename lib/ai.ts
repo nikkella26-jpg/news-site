@@ -16,15 +16,29 @@ export async function generateArticleContent(title: string) {
 
   try {
     const { text } = await generateText({
-      model: google("gemini-2.5-flash"),
-      prompt: `Write a professional news article in English with the title: "${title}". 
-      The article should include a clear lead paragraph and several body paragraphs. 
-      Write in a journalistic style. Do not use markdown headers (like # or ##), only plain text with double line breaks between paragraphs.`,
+      model: google("gemini-2.0-flash"),
+      prompt: `Act as a senior journalist for a leading global news outlet.
+      Write a comprehensive, professional, and engaging news article with the title: "${title}".
+      
+      Requirements:
+      - Include a strong lead, context, and multiple detailed body paragraphs.
+      - Use an authoritative, analytical, and sophisticated tone.
+      - Format as plain text with double line breaks between paragraphs.
+      - Aim for 600-800 words of high-quality content.
+      - DO NOT use markdown headers or special formatting symbols.`,
     });
 
     return text;
-  } catch (error) {
-    console.error("Detailed AI SDK Error:", error);
+  } catch (error: any) {
+    // Graceful error handling for Quota/API limits
+    const isQuotaError = error?.status === 429 || error?.message?.includes("quota") || error?.message?.includes("429");
+
+    if (isQuotaError) {
+      console.warn(`[AI Quota Hint]: Daily limit reached for "${title}". Content fulfillment paused.`);
+    } else {
+      console.error(`[AI Error]: Failed to generate content for "${title}".`);
+    }
+
     throw error;
   }
 }
