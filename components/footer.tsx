@@ -14,23 +14,23 @@ export default function Footer() {
     <footer className="border-t py-6 bg-background">
       <div className="container mx-auto flex flex-col items-center gap-2">
         <div className="flex gap-4">
-          <Link 
-            href="/privacy" 
-            className="text-sm text-muted-foreground hover:underline"
+          <Link
+            href="/privacy"
+            className="text-base text-muted-foreground hover:underline"
           >
             Privacy Policy
           </Link>
-          
-          <button 
+
+          <button
             onClick={resetCookies}
-            className="text-sm text-muted-foreground hover:underline cursor-pointer"
+            className="text-base text-muted-foreground hover:underline cursor-pointer"
           >
             Handle cookies
           </button>
         </div>
-        
-        <p className="text-xs text-muted-foreground mt-2">
-          © {new Date().getFullYear()} Your news site. All rights reserved.
+
+        <p className="text-sm text-muted-foreground mt-2">
+          © {new Date().getFullYear()} Crucible Coders. All rights reserved.
         </p>
       </div>
     </footer>

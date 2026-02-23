@@ -52,18 +52,18 @@ export default async function LandingPage() {
           >
             <div className="cursor-pointer">
 
-              {/* IMAGE — optimized with intrinsic width/height */}
-              <div className="w-full mb-4">
-                <div className="relative w-full overflow-hidden rounded-lg">
+              {/* IMAGE — standardized with aspect-video */}
+              <div className="w-full mb-6">
+                <div className="relative w-full aspect-video overflow-hidden rounded-2xl border border-border shadow-xl group/hero">
                   <Image
                     src={editorsHeadline.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
                     alt={editorsHeadline.title}
-                    width={900}      // narrower, optimized
-                    height={500}     // maintains aspect ratio
-                    className="w-full h-auto object-cover group-hover:opacity-90 transition-opacity"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover/hero:scale-105"
+                    sizes="(max-width: 768px) 100vw, 80vw"
                     priority
                   />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent" />
                 </div>
               </div>
 

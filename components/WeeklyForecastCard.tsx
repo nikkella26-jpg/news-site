@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import {
   Cloud,
   CloudDrizzle,
@@ -14,6 +15,8 @@ type Props = {
   minTemp: number;
   maxTemp: number;
   condition: string;
+  isActive?: boolean;
+  onClick?: () => void;
 };
 
 const getWeatherIcon = (condition: string) => {
@@ -34,23 +37,23 @@ export function WeeklyForecastCard({
   minTemp,
   maxTemp,
   condition,
+  isActive,
+  onClick
 }: Props) {
   return (
     <div
-      className="
-        rounded-3xl
-        bg-card/40 dark:bg-card/20
-        backdrop-blur-md
-        border border-border
-        shadow-2xl shadow-black/5
-        p-4
-        text-center
-        flex flex-col items-center
-        transition-all duration-300
-        hover:bg-card/60 dark:hover:bg-card/40 hover:-translate-y-1
-      "
+      onClick={onClick}
+      className={cn(
+        "rounded-3xl bg-card/40 dark:bg-card/20 backdrop-blur-md border border-border shadow-2xl shadow-black/5 p-4 text-center flex flex-col items-center transition-all duration-300 cursor-pointer",
+        isActive
+          ? "bg-indigo-600/90 dark:bg-indigo-600/60 border-indigo-400 text-white shadow-indigo-500/20 scale-105"
+          : "hover:bg-card/60 dark:hover:bg-card/40 hover:-translate-y-1"
+      )}
     >
-      <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-3">{dayLabel}</p>
+      <p className={cn(
+        "text-[10px] font-black uppercase tracking-widest mb-3",
+        isActive ? "text-indigo-100" : "text-muted-foreground"
+      )}>{dayLabel}</p>
 
       <div className="mb-3">
         {getWeatherIcon(condition)}

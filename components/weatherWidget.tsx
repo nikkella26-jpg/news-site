@@ -34,6 +34,16 @@ export default function WeatherWidget() {
       try {
         if (!process.env.NEXT_PUBLIC_WEATHER_API_URL) return;
 
+        // Check cache first
+        const cacheKey = `weather_snapshot_${city}`;
+        const { clientCache } = await import("@/lib/cache");
+        const cachedData = clientCache.get(cacheKey);
+
+        if (cachedData) {
+          setWeather(cachedData);
+          return;
+        }
+
         const apiBaseUrl = process.env.NEXT_PUBLIC_WEATHER_API_URL.replace(
           /\/+$/,
           "",
@@ -50,13 +60,16 @@ export default function WeatherWidget() {
         const now = data.timeseries?.[0];
         if (!now) return;
 
-        setWeather({
+        const weatherData = {
           temp: Math.round(now.temp),
           summary: now.summary,
           city: city,
-        });
+        };
+
+        setWeather(weatherData);
+        clientCache.set(cacheKey, weatherData, 3); // 3-hour cache window
       } catch {
-        // Intentionally silent — navbar widgets should never shout
+        // Intentionally silent
       }
     }
 
@@ -83,7 +96,7 @@ export default function WeatherWidget() {
         <span>
           {city}: {conditionIcon(weather.summary)}
         </span>
-        <span className="font-medium">{weather.temp}°</span>
+        <span className="font-medium">{weather.temp}°C</span>
       </Link>
     </Button>
   );
