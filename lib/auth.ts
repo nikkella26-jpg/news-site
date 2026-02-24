@@ -21,7 +21,7 @@ if (!STRIPE_WEBHOOK_SECRET) {
 }
 
 const stripeClient = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
+  apiVersion: "2025-11-17.clover", // Latest API version as of Stripe SDK v20.0.0
 });
 
 const APP_URL = process.env.BETTER_AUTH_URL || "http://localhost:3000";
@@ -71,7 +71,17 @@ export const auth = betterAuth({
       createCustomerOnSignUp: true,
       subscription: {
         enabled: true,
-        plans: [],
+        plans: [
+          {
+            name: "Basic", // the name of the plan, it'll be automatically lower cased when stored in the database
+            priceId: process.env.PRICE_MONTHLY_ID!, // the price ID from stripe
+            annualDiscountPriceId: process.env.PRICE_YEARLY_ID!, // (optional) the price ID for annual billing with a discount
+            limits: {
+              projects: 5,
+              storage: 10,
+            },
+          },
+        ],
       },
     }),
     nextCookies(),
