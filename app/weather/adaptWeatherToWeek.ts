@@ -56,7 +56,7 @@ export function adaptWeatherToWeek(
 
       return {
         date: dateString,
-        dayLabel: dateObj.toLocaleDateString("en-GB", {
+        dayLabel: dateObj.toLocaleDateString("en-US", {
           weekday: "short",
         }),
         ...summary,

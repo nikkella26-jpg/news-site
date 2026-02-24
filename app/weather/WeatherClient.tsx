@@ -26,9 +26,13 @@ import { cn } from "@/lib/utils";
 import { fetchWeatherByLocation } from "@/lib/weather";
 import type { TimeSeries } from "@/types/weather-types";
 import { simulateSnowStormAlert } from "@/actions/alert-simulation";
+import { toast } from "sonner";
 
 type WeatherClientProps = {
   city: string;
+  initialRawData: TimeSeries[];
+  initialWeekly: any[];
+  initialCurrentWeather: TimeSeries | null;
 };
 
 const getWeatherIcon = (condition: string) => {
@@ -56,16 +60,28 @@ const getSlotLabel = (slot: string) => {
 
 export default function WeatherClient({
   city: initialCity,
+  initialRawData,
+  initialWeekly,
+  initialCurrentWeather,
 }: WeatherClientProps) {
   const [city, setCity] = useState(initialCity);
-  const [rawData, setRawData] = useState<TimeSeries[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [weekly, setWeekly] = useState<ReturnType<typeof adaptWeatherToWeek>>([]);
-  const [currentWeather, setCurrentWeather] = useState<TimeSeries | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [rawData, setRawData] = useState<TimeSeries[]>(initialRawData);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date("2026-01-01T00:00:00Z")); // Stable date for hydration
+  const [weekly, setWeekly] = useState<any[]>(initialWeekly);
+  const [currentWeather, setCurrentWeather] = useState<TimeSeries | null>(initialCurrentWeather);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [locationResolved, setLocationResolved] = useState(false);
   const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+    // On mount, set the selected date to today properly
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    setSelectedDate(d);
+  }, []);
 
   const formatTemp = (temp: number | null) => {
     if (temp === null) return null;
@@ -84,35 +100,56 @@ export default function WeatherClient({
   // Sync with prop changes
   useEffect(() => {
     setCity(initialCity);
-  }, [initialCity]);
+    setRawData(initialRawData);
+    setWeekly(initialWeekly);
+    setCurrentWeather(initialCurrentWeather);
+  }, [initialCity, initialRawData, initialWeekly, initialCurrentWeather]);
 
-  // Resolve user's geolocation (if available)
-  useEffect(() => {
+  const detectBrowserLocation = () => {
     if (!navigator.geolocation) {
-      setLocationResolved(true);
+      toast.error("Geolocation is not supported by your browser");
       return;
     }
 
-    const timeout = setTimeout(() => setLocationResolved(true), 5000);
-
+    setLoading(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocationResolved(true);
-        clearTimeout(timeout);
+      async (position) => {
+        try {
+          // Use a simple reverse geocoding API (BigDataCloud or similar open one)
+          const resp = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`);
+          const data = await resp.json();
+          const foundCity = data.city || data.locality || "Stockholm";
+
+          setCity(foundCity);
+          // Update URL without reload to reflect new city
+          const url = new URL(window.location.href);
+          url.searchParams.set("city", foundCity);
+          window.history.pushState({}, "", url.toString());
+        } catch (err) {
+          toast.error("Failed to determine city name from coordinates");
+        } finally {
+          setLoading(false);
+        }
       },
       () => {
-        setLocationResolved(true);
-        clearTimeout(timeout);
-      },
-      { timeout: 5000 }
+        toast.error("Location access denied");
+        setLoading(false);
+      }
     );
+  };
 
-    return () => clearTimeout(timeout);
+  useEffect(() => {
+    setLocationResolved(true);
   }, []);
 
   // Fetch weather
   useEffect(() => {
     if (!locationResolved) return;
+
+    // Skip initial fetch if data is already present from SSR or props
+    if (rawData.length > 0 && city === initialCity) {
+      return;
+    }
 
     const controller = new AbortController();
 
@@ -235,9 +272,18 @@ export default function WeatherClient({
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
           {/* Left: Location */}
           <div className="flex-1 text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-2 text-cyan-500 font-medium mb-1">
-              <MapPin className="w-4 h-4" />
-              <span className="tracking-wide uppercase text-xs font-bold">Current Location</span>
+            <div className="flex items-center justify-center md:justify-start gap-3 text-cyan-500 font-medium mb-1">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4" />
+                <span className="tracking-wide uppercase text-xs font-bold">Current Location</span>
+              </div>
+              <button
+                onClick={detectBrowserLocation}
+                aria-label="Use my device's current GPS location"
+                className="text-[10px] bg-cyan-500/10 hover:bg-cyan-500/20 text-black dark:text-slate-100 px-2.5 py-1 rounded-full transition-all duration-300 font-black uppercase tracking-tighter border border-cyan-500/30 shadow-xs focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none"
+              >
+                Use My Accurate Location
+              </button>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-foreground tracking-tight">
               {city}
@@ -245,16 +291,17 @@ export default function WeatherClient({
           </div>
 
           {/* Center: Unit Toggle */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
             <button
               onClick={toggleUnit}
-              className="group relative flex items-center gap-1 bg-muted/30 hover:bg-muted/50 border border-border/50 p-1.5 rounded-2xl transition-all duration-300"
+              aria-label={`Switch to ${unit === 'C' ? 'Fahrenheit' : 'Celsius'}`}
+              className="group relative flex items-center gap-1 bg-muted/30 hover:bg-muted/50 border border-border/50 p-1.5 rounded-2xl transition-all duration-300 shrink-0 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none"
             >
-              <div className={cn(
+              <div aria-hidden="true" className={cn(
                 "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300",
                 unit === 'C' ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30" : "text-muted-foreground"
               )}>°C</div>
-              <div className={cn(
+              <div aria-hidden="true" className={cn(
                 "px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300",
                 unit === 'F' ? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30" : "text-muted-foreground"
               )}>°F</div>
@@ -262,10 +309,15 @@ export default function WeatherClient({
           </div>
 
           {/* Right: Date */}
-          <div className="flex-1 flex justify-center md:justify-end">
-            <div className="text-muted-foreground font-bold flex items-center gap-2 bg-muted/50 px-5 py-2.5 rounded-2xl border border-border/50 whitespace-nowrap shadow-sm">
+          <div className="flex-1 flex justify-center md:justify-end w-full md:w-auto">
+            <div
+              suppressHydrationWarning
+              className="text-muted-foreground font-bold flex items-center gap-2 bg-muted/50 px-5 py-2.5 rounded-2xl border border-border/50 whitespace-nowrap shadow-sm text-sm"
+            >
               <CalendarDays className="w-5 h-5 text-cyan-500/70" />
-              {new Date().toLocaleDateString("en-US", { weekday: 'long', month: 'long', day: 'numeric' })}
+              {hasMounted
+                ? new Date().toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' })
+                : "..."}
             </div>
           </div>
         </div>
@@ -313,13 +365,20 @@ export default function WeatherClient({
       <section className="mb-12">
         <h2 className="text-xl font-black text-foreground mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            {selectedDate.toLocaleDateString() === new Date().toLocaleDateString()
-              ? "Today's Forecast"
-              : `${selectedDate.toLocaleDateString("en-US", { weekday: 'long' })}'s Forecast`}
+            {!hasMounted
+              ? "Forecast"
+              : (selectedDate.toDateString() === new Date().toDateString()
+                ? "Today's Forecast"
+                : `${selectedDate.toLocaleDateString("en-US", { weekday: 'long' })}'s Forecast`)
+            }
           </div>
-          {selectedDate.toLocaleDateString() !== new Date().toLocaleDateString() && (
+          {hasMounted && selectedDate.toDateString() !== new Date().toDateString() && (
             <button
-              onClick={() => setSelectedDate(new Date())}
+              onClick={() => {
+                const d = new Date();
+                d.setHours(0, 0, 0, 0);
+                setSelectedDate(d);
+              }}
               className="text-xs bg-muted hover:bg-border px-3 py-1 rounded-full transition-colors"
             >
               Reset to Today
@@ -370,17 +429,19 @@ export default function WeatherClient({
           <h2 className="text-xl font-black text-foreground">Next 7 Days</h2>
           <div className="h-px flex-1 bg-border/50 mx-6 hidden md:block" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-7 gap-4">
+        <div className="flex md:grid md:grid-cols-7 gap-4 overflow-x-auto pb-4 md:pb-0 snap-x">
           {weekly.map((day, index) => (
             <div key={index} className="contents group">
-              <WeeklyForecastCard
-                dayLabel={day.dayLabel}
-                minTemp={formatTemp(day.minTemp) as number}
-                maxTemp={formatTemp(day.maxTemp) as number}
-                condition={day.condition}
-                isActive={selectedDate.toISOString().slice(0, 10) === day.date}
-                onClick={() => setSelectedDate(new Date(day.date))}
-              />
+              <div className="min-w-[140px] md:min-w-0 snap-start">
+                <WeeklyForecastCard
+                  dayLabel={day.dayLabel}
+                  minTemp={formatTemp(day.minTemp) as number}
+                  maxTemp={formatTemp(day.maxTemp) as number}
+                  condition={day.condition}
+                  isActive={selectedDate.toISOString().slice(0, 10) === day.date}
+                  onClick={() => setSelectedDate(new Date(day.date))}
+                />
+              </div>
             </div>
           ))}
         </div>

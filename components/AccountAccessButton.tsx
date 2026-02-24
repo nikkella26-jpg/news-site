@@ -17,8 +17,9 @@ type Props = {
     noSub?: string; // default: "Subscribe"
   };
   size?: "sm" | "default" | "lg";
-    variant?: "default" | "secondary" | "outline";
+  variant?: "default" | "secondary" | "outline";
   forceAccountRedirect?: boolean;
+  onClickAction?: () => void;
 };
 
 export default function AccountAccessButton({
@@ -28,12 +29,14 @@ export default function AccountAccessButton({
   loginPath = "/login",
   labelOverride,
   size = "sm",
-    variant = "default",
-  forceAccountRedirect = false, 
+  variant = "default",
+  forceAccountRedirect = false,
+  onClickAction,
 }: Props) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [hasActiveSub, setHasActiveSub] = useState<boolean>(false);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -62,6 +65,7 @@ export default function AccountAccessButton({
       }
     };
 
+    setHasMounted(true);
     load();
     return () => {
       cancelled = true;
@@ -75,30 +79,41 @@ export default function AccountAccessButton({
     return labelOverride?.noSub ?? "Subscribe";
   }, [isPending, session, hasActiveSub, labelOverride]);
 
+  if (!hasMounted) {
+    return (
+      <Button size={size} variant={variant} className={className} disabled>
+        …
+      </Button>
+    );
+  }
+
   const handleClick = () => {
-  if (isPending) return;
+    if (isPending) return;
 
-  if (!session) {
-    toast.error("Please login to continue");
-    router.push(loginPath);
-    return;
-  }
+    if (onClickAction) {
+      onClickAction();
+    }
 
-  // ✅ If this is Account button, always go to account page
-  if (forceAccountRedirect) {
-    router.push(accountPath);
-    return;
-  }
+    if (!session) {
+      toast.error("Please login to continue");
+      router.push(loginPath);
+      return;
+    }
 
-  // ✅ Subscribe button behavior
-  if (hasActiveSub) {
-    router.push(accountPath);
-    return;
-  }
+    // ✅ If this is Account button, always go to account page
+    if (forceAccountRedirect) {
+      router.push(accountPath);
+      return;
+    }
 
-  router.push(subscribePath);
-};
+    // ✅ Subscribe button behavior
+    if (hasActiveSub) {
+      router.push(accountPath);
+      return;
+    }
 
+    router.push(subscribePath);
+  };
 
   return (
     <Button

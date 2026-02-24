@@ -9,8 +9,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import prisma from "@/lib/prisma";
-
 import { Article } from "@/lib/generated/prisma";
 
 export default function HeroSlider({ articles }: { articles: Article[] }) {
@@ -30,13 +28,15 @@ export default function HeroSlider({ articles }: { articles: Article[] }) {
               <CarouselItem key={article.id} className="pl-0">
                 <Link href={`/articles/${article.slug}`}>
                   <div className="relative w-full aspect-video md:aspect-21/9 rounded-[1.5rem] overflow-hidden cursor-pointer group bg-black/90">
-                    {/* Background Blur to fill aspect ratio gaps */}
+                    {/* Background Blur to fill aspect ratio gaps - loading="lazy" and low quality */}
                     <Image
                       src={article.image || "https://images.unsplash.com/photo-1504711432869-0df3058b01ad?q=80&w=1000&auto=format&fit=crop"}
                       alt=""
                       fill
                       className="object-cover blur-3xl opacity-40 scale-125 transition-transform duration-1000 group-hover:scale-150"
                       aria-hidden="true"
+                      sizes="10vw"
+                      loading="lazy"
                     />
 
                     {/* Foreground Full Image */}
@@ -46,7 +46,8 @@ export default function HeroSlider({ articles }: { articles: Article[] }) {
                         alt={article.title}
                         fill
                         className="object-contain transition-transform duration-700 group-hover:scale-[1.02]"
-                        priority
+                        priority={articles.indexOf(article) === 0}
+                        sizes="(max-width: 1024px) 100vw, 1024px"
                       />
                     </div>
 
