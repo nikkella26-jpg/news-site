@@ -125,3 +125,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+.mask-bottom {
+  mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 20%, transparent 100%);
+}

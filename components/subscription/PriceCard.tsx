@@ -44,7 +44,7 @@ export default function PriceCard({
         <h3 className="text-lg font-semibold capitalize">{name}</h3>
 
         <div className="text-right">
-          <div className="text-2xl font-bold">${price.toFixed(2)}</div>
+          <div className="text-2xl font-bold">{price.toFixed(2)} SEK</div>
           <div className="text-sm text-zinc-500">/ {interval}</div>
         </div>
       </div>
