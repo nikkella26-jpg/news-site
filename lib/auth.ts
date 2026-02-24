@@ -74,8 +74,8 @@ export const auth = betterAuth({
         plans: [
           {
             name: "Basic", // the name of the plan, it'll be automatically lower cased when stored in the database
-            priceId: "price_1T3z20Bko7D5S4QDj2WZ13T7", // the price ID from stripe
-            annualDiscountPriceId: "price_1T3z2VBko7D5S4QDrRJpaCqN", // (optional) the price ID for annual billing with a discount
+            priceId: process.env.PRICE_MONTHLY_ID!, // the price ID from stripe
+            annualDiscountPriceId: process.env.PRICE_YEARLY_ID!, // (optional) the price ID for annual billing with a discount
             limits: {
               projects: 5,
               storage: 10,
